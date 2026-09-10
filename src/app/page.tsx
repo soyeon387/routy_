@@ -1,10 +1,41 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { getCurrentUser, logoutUser } from '@/lib/authMock';
 
 export default function HomePage() {
+  const router = useRouter();
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [showPlannerNotice, setShowPlannerNotice] = useState(false);
+
+  useEffect(() => {
+    const user = getCurrentUser();
+    if (!user) {
+      router.replace('/login');
+    } else {
+      setCurrentUser(user);
+      setIsCheckingAuth(false);
+    }
+  }, [router]);
+
+  const handleLogout = () => {
+    logoutUser();
+    router.replace('/login');
+  };
+
+  if (isCheckingAuth) {
+    return (
+      <main className="max-w-md mx-auto min-h-screen bg-[#FAF7F2] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-3 border-[#C25E3E] border-t-transparent rounded-full animate-spin" />
+          <p className="font-title text-xs text-[#8C7A6B]">사용자 확인 중...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="max-w-md mx-auto min-h-screen px-5 pt-8 pb-14 bg-[#FAF7F2] text-[#2D241E] flex flex-col justify-between selection:bg-[#E8DCC4]">
@@ -17,7 +48,18 @@ export default function HomePage() {
               <span className="w-2 h-2 rounded-full bg-[#C25E3E] animate-pulse" />
               우리들의 약속 플래너
             </span>
-            <span className="font-title text-[11px] tracking-wider text-[#A89889]">v2.0</span>
+
+            <div className="flex items-center gap-2">
+              <span className="font-title text-xs text-[#7A6251]">
+                👤 <b>{currentUser}</b>님
+              </span>
+              <button
+                onClick={handleLogout}
+                className="font-title text-[10px] text-[#A89889] hover:text-[#C25E3E] px-2 py-1 bg-white border border-[#EADFCF] rounded-lg transition active:scale-95 shadow-2xs"
+              >
+                로그아웃
+              </button>
+            </div>
           </div>
 
           <div>
@@ -30,18 +72,18 @@ export default function HomePage() {
           </div>
         </header>
 
-        {/* 3대 핵심 메뉴 */}
-        <div className="flex flex-col gap-4">
+        {/* 메뉴 리스트 */}
+        <div className="flex flex-col gap-3.5">
           
-          {/* 1. [메인 대형 카드] AI 플래너 */}
+          {/* 1. AI 플래너 카드 */}
           <div
             onClick={() => setShowPlannerNotice(true)}
-            className="group relative p-7 rounded-[32px] bg-[#2D241E] text-white shadow-[0_16px_36px_rgba(45,36,30,0.18)] overflow-hidden transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] border-2 border-[#1E1713] cursor-pointer flex flex-col justify-between min-h-[220px]"
+            className="group relative p-7 rounded-[32px] bg-[#2D241E] text-white shadow-[0_16px_36px_rgba(45,36,30,0.18)] overflow-hidden transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] border-2 border-[#1E1713] cursor-pointer flex flex-col justify-between min-h-[200px]"
           >
             <div className="absolute -top-10 -right-10 w-52 h-52 bg-gradient-to-br from-[#C25E3E]/40 via-[#E07A5F]/20 to-transparent rounded-full blur-3xl pointer-events-none" />
             
             <div className="relative z-10 flex items-start justify-between">
-              <span className="w-14 h-14 rounded-2xl bg-[#43362E] border border-[#59483D] flex items-center justify-center text-3xl shadow-inner">
+              <span className="w-13 h-13 rounded-2xl bg-[#43362E] border border-[#59483D] flex items-center justify-center text-2xl shadow-inner">
                 ✨
               </span>
               <span className="font-title text-[10px] px-2.5 py-1 rounded-full bg-[#3B2F27] text-[#E8DCC4] border border-[#524237]">
@@ -49,11 +91,11 @@ export default function HomePage() {
               </span>
             </div>
 
-            <div className="relative z-10 mt-6">
+            <div className="relative z-10 mt-5">
               <h2 className="font-title text-2xl tracking-tight text-[#FAF7F2] group-hover:text-[#F3D5B5] transition-colors flex items-center gap-1.5">
                 AI 플래너 <span className="text-[#C25E3E]">→</span>
               </h2>
-              <p className="font-body text-xs font-normal text-[#C8B8A6] mt-2 leading-relaxed">
+              <p className="font-body text-xs font-normal text-[#C8B8A6] mt-1.5 leading-relaxed">
                 모임의 목적, 예산, 이동 거리에 딱 맞는 최적의 동선과 풀코스 일정을 AI가 1초 만에 설계해 드립니다.
               </p>
             </div>
@@ -62,45 +104,68 @@ export default function HomePage() {
           {/* 2. 약속 찜 지도 */}
           <Link
             href="/map"
-            className="group relative p-5 rounded-[26px] bg-white border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between active:scale-[0.99]"
+            className="group relative p-4.5 rounded-[24px] bg-white border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between active:scale-[0.99]"
           >
-            <div className="flex items-center gap-3.5">
-              <span className="w-12 h-12 rounded-2xl bg-[#F7F2EB] border border-[#E8DEC7] flex items-center justify-center text-2xl shrink-0">
+            <div className="flex items-center gap-3">
+              <span className="w-11 h-11 rounded-2xl bg-[#F7F2EB] border border-[#E8DEC7] flex items-center justify-center text-xl shrink-0">
                 🗺️
               </span>
               <div className="text-left">
                 <h3 className="font-title text-base text-[#2D241E] group-hover:text-[#C25E3E] transition-colors">
                   약속 찜 지도
                 </h3>
-                <p className="font-body text-xs font-normal text-[#8C7A6B] mt-0.5">
+                <p className="font-body text-xs text-[#8C7A6B] mt-0.5">
                   가고 싶은 곳을 찜하고 공유해보세요!
                 </p>
               </div>
             </div>
-            <span className="font-title text-sm text-[#8C7A6B] group-hover:text-[#C25E3E] group-hover:translate-x-1 transition-all pl-2">
+            <span className="font-title text-xs text-[#8C7A6B] group-hover:text-[#C25E3E] group-hover:translate-x-1 transition-all pl-2">
               GO →
             </span>
           </Link>
 
-          {/* 3. 근처 카페 추천 */}
+          {/* 3. 맛집 어디가지? */}
+          <Link
+            href="/restaurant"
+            className="group relative p-4.5 rounded-[24px] bg-white border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between active:scale-[0.99]"
+          >
+            <div className="flex items-center gap-3">
+              <span className="w-11 h-11 rounded-2xl bg-[#FBF2EE] border border-[#F2D7CD] flex items-center justify-center text-xl shrink-0">
+                🍽️
+              </span>
+              <div className="text-left">
+                <h3 className="font-title text-base text-[#2D241E] group-hover:text-[#C25E3E] transition-colors">
+                  맛집 어디가지?
+                </h3>
+                <p className="font-body text-xs text-[#8C7A6B] mt-0.5">
+                  거리별, 음식 종류별로 맛집을 찾아드려요!
+                </p>
+              </div>
+            </div>
+            <span className="font-title text-xs text-[#8C7A6B] group-hover:text-[#C25E3E] group-hover:translate-x-1 transition-all pl-2">
+              GO →
+            </span>
+          </Link>
+
+          {/* 4. 카페 어디가지? (문구 변경 반영) */}
           <Link
             href="/cafe"
-            className="group relative p-5 rounded-[26px] bg-white border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between active:scale-[0.99]"
+            className="group relative p-4.5 rounded-[24px] bg-white border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between active:scale-[0.99]"
           >
-            <div className="flex items-center gap-3.5">
-              <span className="w-12 h-12 rounded-2xl bg-[#FBF5ED] border border-[#EFE4D6] flex items-center justify-center text-2xl shrink-0">
+            <div className="flex items-center gap-3">
+              <span className="w-11 h-11 rounded-2xl bg-[#FBF5ED] border border-[#EFE4D6] flex items-center justify-center text-xl shrink-0">
                 ☕
               </span>
               <div className="text-left">
                 <h3 className="font-title text-base text-[#2D241E] group-hover:text-[#A86F3D] transition-colors">
-                  근처 카페 추천 (1km 이내)
+                  카페 어디가지?
                 </h3>
-                <p className="font-body text-xs font-normal text-[#8C7A6B] mt-0.5">
+                <p className="font-body text-xs text-[#8C7A6B] mt-0.5">
                   거리별, 디저트별로 카페를 추천해드려요!
                 </p>
               </div>
             </div>
-            <span className="font-title text-sm text-[#8C7A6B] group-hover:text-[#A86F3D] group-hover:translate-x-1 transition-all pl-2">
+            <span className="font-title text-xs text-[#8C7A6B] group-hover:text-[#A86F3D] group-hover:translate-x-1 transition-all pl-2">
               GO →
             </span>
           </Link>
@@ -108,12 +173,10 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 푸터 */}
-      <footer className="font-title text-center text-xs text-[#A89889] pt-8">
+      <footer className="font-title text-center text-xs text-[#A89889] pt-6">
         ROUTY · CURATED FOR US
       </footer>
 
-      {/* 준비중 모달 */}
       {showPlannerNotice && (
         <div className="fixed inset-0 z-50 bg-[#2D241E]/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-[#FAF7F2] text-[#2D241E] w-full max-w-xs rounded-[30px] p-6 shadow-2xl border-2 border-[#EADFCF] text-center flex flex-col gap-3">

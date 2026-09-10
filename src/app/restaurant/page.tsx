@@ -1,7 +1,8 @@
+import { Suspense } from 'react';
 import Link from 'next/link';
-import CafeFinder from '@/components/cafe/CafeFinder';
+import RestaurantFinder from '@/components/restaurant/RestaurantFinder';
 
-export default function CafePage() {
+export default function RestaurantPage() {
   return (
     <main className="max-w-md mx-auto min-h-screen px-5 pt-6 pb-12 flex flex-col gap-4 bg-[#FAF7F2] text-[#2D241E]">
       <header className="flex items-center justify-between pb-3 border-b border-[#EADFCF]">
@@ -13,7 +14,7 @@ export default function CafePage() {
             ← 홈으로
           </Link>
           <h1 className="font-title text-lg tracking-tight text-[#2D241E] flex items-center gap-1.5">
-            카페 어디가지? <span className="text-[#A86F3D]">☕</span>
+            맛집 어디가지? <span className="text-[#C25E3E]">🍽️</span>
           </h1>
         </div>
         <Link
@@ -24,7 +25,9 @@ export default function CafePage() {
         </Link>
       </header>
 
-      <CafeFinder />
+      <Suspense fallback={<div className="text-center p-8 text-xs text-[#8C7A6B]">로딩 중...</div>}>
+        <RestaurantFinder />
+      </Suspense>
     </main>
   );
 }
