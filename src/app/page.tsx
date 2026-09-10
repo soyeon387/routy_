@@ -1,217 +1,138 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-
-interface QuickStats {
-  roomCount: number;
-  activeRoomTitle: string;
-  foodDoneToday: boolean;
-}
+import { useState } from 'react';
 
 export default function HomePage() {
-  const [stats, setStats] = useState<QuickStats>({
-    roomCount: 1,
-    activeRoomTitle: '우리들의 지도',
-    foodDoneToday: false,
-  });
-
-  useEffect(() => {
-    try {
-      const savedRooms = localStorage.getItem('routy_rooms_v2') || localStorage.getItem('routy_rooms_v1');
-      const activeCode = localStorage.getItem('routy_current_room_code');
-      const today = new Date().toISOString().slice(0, 10);
-      const foodDate = localStorage.getItem('routy_food_date');
-      const foodResult = localStorage.getItem('routy_food_result');
-
-      if (savedRooms) {
-        const parsed = JSON.parse(savedRooms);
-        const current = parsed.find((r: any) => r.code === activeCode) || parsed[0];
-        setStats({
-          roomCount: parsed.length,
-          activeRoomTitle: current ? current.title : '우리들의 지도',
-          foodDoneToday: foodDate === today && !!foodResult,
-        });
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }, []);
+  const [showPlannerNotice, setShowPlannerNotice] = useState(false);
 
   return (
-    <main className="max-w-lg mx-auto min-h-screen p-5 pb-16 flex flex-col justify-between bg-slate-50 text-slate-900 font-sans">
-      <div className="flex flex-col gap-6 pt-4">
+    <main className="max-w-md mx-auto min-h-screen px-5 pt-8 pb-14 bg-[#FAF7F2] text-[#2D241E] flex flex-col justify-between selection:bg-[#E8DCC4]">
+      <div className="flex flex-col gap-6">
         
-        {/* 1. 브랜드 타이틀 & 탑 인포 */}
+        {/* 상단 헤더 */}
         <header className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 border border-red-100 rounded-full text-xs font-bold text-red-600">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              둘만의 맞춤 데이트 플래너
-            </div>
-            <span className="text-[11px] font-semibold text-slate-400">PWA Ready</span>
+            <span className="font-title inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] bg-[#EFE9DF] text-[#7A6251] border border-[#E3D9CC]">
+              <span className="w-2 h-2 rounded-full bg-[#C25E3E] animate-pulse" />
+              우리들의 약속 플래너
+            </span>
+            <span className="font-title text-[11px] tracking-wider text-[#A89889]">v2.0</span>
           </div>
 
-          <div className="mt-1">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-              Routy <span className="text-red-500 text-2xl">❤️</span>
+          <div>
+            <h1 className="font-title text-4xl tracking-tight text-[#2D241E] flex items-center gap-1.5 mt-1">
+              ROUTY<span className="text-[#C25E3E]">!</span>
             </h1>
-            <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-              취향 분석부터 맞춤 동선 설계, 실시간 지도 아카이브까지 한번에 끝내는 스마트 코스 플래너
+            <p className="font-body text-xs font-normal text-[#8C7A6B] mt-1 leading-relaxed">
+              취향 고민은 AI가, 만남은 편하게! 직관적인 약속 코스 플래너
             </p>
-          </div>
-
-          {/* 현재 연결된 방 퀵 뱃지 */}
-          <div className="mt-2 p-3 bg-white border border-slate-200/80 rounded-2xl flex items-center justify-between shadow-xs">
-            <div className="flex items-center gap-2">
-              <span className="text-base">🛋️</span>
-              <div className="text-left">
-                <p className="text-[11px] text-slate-400 font-medium">현재 활성 룸</p>
-                <p className="text-xs font-bold text-slate-800 truncate max-w-[180px]">
-                  {stats.activeRoomTitle}
-                </p>
-              </div>
-            </div>
-            <Link
-              href="/map"
-              className="text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-xl transition"
-            >
-              룸 전환 →
-            </Link>
           </div>
         </header>
 
-        {/* 2. 핵심 기능 4대 네비게이션 카드 */}
-        <div className="flex flex-col gap-3.5">
+        {/* 3대 핵심 메뉴 */}
+        <div className="flex flex-col gap-4">
           
-          {/* ① 스마트 데이트 코스 빌더 (최우선 순위 핵심) */}
-          <Link
-            href="/course"
-            className="group relative p-5 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-white rounded-3xl shadow-xl hover:shadow-2xl transition transform active:scale-[0.98] border border-slate-700/50 overflow-hidden"
+          {/* 1. [메인 대형 카드] AI 플래너 */}
+          <div
+            onClick={() => setShowPlannerNotice(true)}
+            className="group relative p-7 rounded-[32px] bg-[#2D241E] text-white shadow-[0_16px_36px_rgba(45,36,30,0.18)] overflow-hidden transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] border-2 border-[#1E1713] cursor-pointer flex flex-col justify-between min-h-[220px]"
           >
-            <div className="absolute top-0 right-0 w-36 h-36 bg-red-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
-            <div className="flex items-start justify-between relative z-10 mb-6">
-              <span className="text-3xl p-3 bg-slate-800/80 rounded-2xl border border-slate-700 shadow-inner">
+            <div className="absolute -top-10 -right-10 w-52 h-52 bg-gradient-to-br from-[#C25E3E]/40 via-[#E07A5F]/20 to-transparent rounded-full blur-3xl pointer-events-none" />
+            
+            <div className="relative z-10 flex items-start justify-between">
+              <span className="w-14 h-14 rounded-2xl bg-[#43362E] border border-[#59483D] flex items-center justify-center text-3xl shadow-inner">
                 ✨
               </span>
-              <span className="text-[11px] font-extrabold px-3 py-1 bg-red-500 text-white rounded-full tracking-wide shadow-sm">
-                핵심 기능
+              <span className="font-title text-[10px] px-2.5 py-1 rounded-full bg-[#3B2F27] text-[#E8DCC4] border border-[#524237]">
+                오픈 준비중
               </span>
             </div>
-            <div className="relative z-10">
-              <div className="flex items-center gap-1.5">
-                <h2 className="text-lg font-black text-white group-hover:text-red-400 transition">
-                  맞춤 데이트 코스 생성기
-                </h2>
-                <span className="text-red-400 text-sm font-bold">→</span>
-              </div>
-              <p className="text-xs text-slate-300 mt-1.5 leading-relaxed">
-                위치와 취향(밥·카페·활동)을 고르면 지도 동선, 예상 소요 시간, 경비까지 한눈에 계획해 드려요.
+
+            <div className="relative z-10 mt-6">
+              <h2 className="font-title text-2xl tracking-tight text-[#FAF7F2] group-hover:text-[#F3D5B5] transition-colors flex items-center gap-1.5">
+                AI 플래너 <span className="text-[#C25E3E]">→</span>
+              </h2>
+              <p className="font-body text-xs font-normal text-[#C8B8A6] mt-2 leading-relaxed">
+                모임의 목적, 예산, 이동 거리에 딱 맞는 최적의 동선과 풀코스 일정을 AI가 1초 만에 설계해 드립니다.
               </p>
-              <div className="mt-3 flex gap-2">
-                <span className="text-[10px] font-semibold text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded-md border border-slate-700">
-                  인터랙티브 동선 지도
-                </span>
-                <span className="text-[10px] font-semibold text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded-md border border-slate-700">
-                  장소 셔플 & 락
-                </span>
-              </div>
             </div>
-          </Link>
-
-          {/* 2열 그리드: 지도 아카이브 & 근처 카페 추천 */}
-          <div className="grid grid-cols-2 gap-3.5">
-            
-            {/* ② 데이트 찜 지도 (지도 아카이브) */}
-            <Link
-              href="/map"
-              className="group p-4 bg-white text-slate-900 border border-slate-200 rounded-3xl shadow-xs hover:border-slate-300 hover:shadow-md transition transform active:scale-[0.98] flex flex-col justify-between min-h-[175px]"
-            >
-              <div className="flex items-start justify-between">
-                <span className="text-2xl p-2 bg-red-50 text-red-600 rounded-xl border border-red-100">
-                  🗺️
-                </span>
-                <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-                  코드 공유
-                </span>
-              </div>
-              <div>
-                <h3 className="text-sm font-bold group-hover:text-red-500 transition flex items-center gap-0.5">
-                  데이트 찜 지도 <span>→</span>
-                </h3>
-                <p className="text-[11px] text-slate-400 mt-1 leading-snug">
-                  🤍 가고 싶은 곳과 ❤️ 다녀온 곳을 실시간으로 관리해요.
-                </p>
-              </div>
-            </Link>
-
-            {/* ③ 근처 카페 추천 */}
-            <Link
-              href="/cafe"
-              className="group p-4 bg-white text-slate-900 border border-slate-200 rounded-3xl shadow-xs hover:border-slate-300 hover:shadow-md transition transform active:scale-[0.98] flex flex-col justify-between min-h-[175px]"
-            >
-              <div className="flex items-start justify-between">
-                <span className="text-2xl p-2 bg-amber-50 text-amber-600 rounded-xl border border-amber-100">
-                  ☕
-                </span>
-                <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
-                  거리순 1km
-                </span>
-              </div>
-              <div>
-                <h3 className="text-sm font-bold group-hover:text-amber-600 transition flex items-center gap-0.5">
-                  디저트 카페 <span>→</span>
-                </h3>
-                <p className="text-[11px] text-slate-400 mt-1 leading-snug">
-                  소금빵, 수플레, 프렌치토스트 등 디저트별 탐색
-                </p>
-              </div>
-            </Link>
-
           </div>
 
-          {/* ④ 음식 밸런스 게임 (오늘 뭐 먹지?) */}
+          {/* 2. 약속 찜 지도 */}
           <Link
-            href="/food"
-            className="group p-4 bg-white text-slate-900 border border-slate-200 rounded-3xl shadow-xs hover:border-slate-300 hover:shadow-md transition transform active:scale-[0.98] flex items-center justify-between"
+            href="/map"
+            className="group relative p-5 rounded-[26px] bg-white border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between active:scale-[0.99]"
           >
-            <div className="flex items-center gap-3">
-              <span className="text-2xl p-2 bg-orange-50 text-orange-600 rounded-2xl border border-orange-100 shrink-0">
-                🍕
+            <div className="flex items-center gap-3.5">
+              <span className="w-12 h-12 rounded-2xl bg-[#F7F2EB] border border-[#E8DEC7] flex items-center justify-center text-2xl shrink-0">
+                🗺️
               </span>
               <div className="text-left">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold group-hover:text-orange-600 transition">
-                    오늘 뭐 먹지? (밸런스 게임)
-                  </h3>
-                  {stats.foodDoneToday ? (
-                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                      오늘 참여완료 ✨
-                    </span>
-                  ) : (
-                    <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-                      매일 자정 갱신
-                    </span>
-                  )}
-                </div>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  간단한 양자택일 카드로 서로 먹고 싶은 음식을 맞추고 추천받아요.
+                <h3 className="font-title text-base text-[#2D241E] group-hover:text-[#C25E3E] transition-colors">
+                  약속 찜 지도
+                </h3>
+                <p className="font-body text-xs font-normal text-[#8C7A6B] mt-0.5">
+                  가고 싶은 곳을 찜하고 공유해보세요!
                 </p>
               </div>
             </div>
-            <span className="text-slate-300 group-hover:text-slate-600 font-bold px-1 transition">
-              →
+            <span className="font-title text-sm text-[#8C7A6B] group-hover:text-[#C25E3E] group-hover:translate-x-1 transition-all pl-2">
+              GO →
+            </span>
+          </Link>
+
+          {/* 3. 근처 카페 추천 */}
+          <Link
+            href="/cafe"
+            className="group relative p-5 rounded-[26px] bg-white border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between active:scale-[0.99]"
+          >
+            <div className="flex items-center gap-3.5">
+              <span className="w-12 h-12 rounded-2xl bg-[#FBF5ED] border border-[#EFE4D6] flex items-center justify-center text-2xl shrink-0">
+                ☕
+              </span>
+              <div className="text-left">
+                <h3 className="font-title text-base text-[#2D241E] group-hover:text-[#A86F3D] transition-colors">
+                  근처 카페 추천 (1km 이내)
+                </h3>
+                <p className="font-body text-xs font-normal text-[#8C7A6B] mt-0.5">
+                  거리별, 디저트별로 카페를 추천해드려요!
+                </p>
+              </div>
+            </div>
+            <span className="font-title text-sm text-[#8C7A6B] group-hover:text-[#A86F3D] group-hover:translate-x-1 transition-all pl-2">
+              GO →
             </span>
           </Link>
 
         </div>
       </div>
 
-      {/* 3. 하단 푸터 */}
-      <footer className="text-center pt-8 text-xs text-slate-400 border-t border-slate-200/60 flex flex-col gap-1">
-        <p className="font-semibold text-slate-500">Routy · Couple & Friends Place Planner</p>
-        <p className="text-[11px] text-slate-400">Zero-Login Anonymous Architecture</p>
+      {/* 푸터 */}
+      <footer className="font-title text-center text-xs text-[#A89889] pt-8">
+        ROUTY · CURATED FOR US
       </footer>
+
+      {/* 준비중 모달 */}
+      {showPlannerNotice && (
+        <div className="fixed inset-0 z-50 bg-[#2D241E]/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-[#FAF7F2] text-[#2D241E] w-full max-w-xs rounded-[30px] p-6 shadow-2xl border-2 border-[#EADFCF] text-center flex flex-col gap-3">
+            <span className="text-3xl">✨</span>
+            <div>
+              <h4 className="font-title text-base">AI 플래너 준비 중</h4>
+              <p className="font-body text-xs text-[#8C7A6B] mt-1 leading-relaxed">
+                더 스마트한 맞춤 코스 추천 엔진을 작업하고 있습니다. 곧 완성될 예정입니다!
+              </p>
+            </div>
+            <button
+              onClick={() => setShowPlannerNotice(false)}
+              className="font-title mt-2 py-3 bg-[#2D241E] text-white text-xs rounded-xl hover:bg-[#43362E] transition active:scale-95"
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

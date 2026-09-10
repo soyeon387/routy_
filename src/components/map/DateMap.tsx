@@ -1,119 +1,160 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
+
+export interface HeartColor {
+  id: string;
+  name: string;
+  fill: string;
+  stroke: string;
+}
+
+export const HEART_PALETTE: HeartColor[] = [
+  { id: 'pastel-pink', name: '파스텔 핑크', fill: '#FBC4CE', stroke: '#E88A9A' },
+  { id: 'pastel-yellow', name: '버터 옐로우', fill: '#FCE79A', stroke: '#E0B84C' },
+  { id: 'pastel-green', name: '세이지 민트', fill: '#BFDEBE', stroke: '#7EA87D' },
+  { id: 'classic-red', name: '클래식 레드', fill: '#FF4D4D', stroke: '#CC1F1F' },
+  { id: 'vivid-blue', name: '코발트 블루', fill: '#3E82F7', stroke: '#1B54C4' },
+];
+
+export interface GroupItem {
+  name: string;
+  colorId: string;
+}
 
 export interface Place {
   id: string;
   name: string;
-  category: '식당' | '카페' | '활동';
   lat: number;
   lng: number;
   isVisited: boolean;
   address?: string;
-}
-
-export interface FoodResult {
-  date: string;
-  myResult?: string;
-  partnerResult?: string;
+  group?: string;
 }
 
 export interface MapRoom {
   code: string;
   title: string;
   places: Place[];
+  groups: GroupItem[];
+  defaultHeartColorId?: string;
   updatedAt: number;
-  foodResult?: FoodResult;
 }
 
-const DEFAULT_PLACES: Place[] = [
-  { id: '1', name: '성수 감성 파스타', category: '식당', lat: 37.54458, lng: 127.05603, isVisited: false, address: '서울 성동구 연무장길' },
-  { id: '2', name: '성수 소금빵 베이커리', category: '카페', lat: 37.54612, lng: 127.05834, isVisited: true, address: '서울 성동구 아차산로' },
-  { id: '3', name: '서울숲 산책로 & 사슴방사장', category: '활동', lat: 37.54308, lng: 127.04179, isVisited: false, address: '서울 성동구 뚝섬로' },
+const DEFAULT_GROUPS: GroupItem[] = [
+  { name: '서울', colorId: 'pastel-yellow' },
+  { name: '9월 10일 약속', colorId: 'pastel-pink' },
 ];
 
-const CATEGORY_ICONS: Record<string, string> = {
-  식당: '🍽️',
-  카페: '☕',
-  활동: '🎡',
-};
-
-// 밸런스 게임 문항
-const QUESTIONS = [
-  { id: 1, title: '오늘 끌리는 온도는?', optionA: '🔥 뜨끈한 국물', optionB: '🍳 바싹한 구이·볶음' },
-  { id: 2, title: '메인 재료는?', optionA: '🥩 든든한 고기', optionB: '🐟 깔끔한 해산물' },
-  { id: 3, title: '탄수화물 베이스는?', optionA: '🍚 한국인은 밥', optionB: '🍜 호로록 면' },
-  { id: 4, title: '맛의 방향은?', optionA: '🌶️ 화끈한 매운맛', optionB: '🧈 담백·고소한 맛' },
+const DEFAULT_PLACES: Place[] = [
+  { id: '1', name: '성수 핫플 맛집', lat: 37.54458, lng: 127.05603, isVisited: false, address: '서울 성동구 연무장길', group: '9월 10일 약속' },
+  { id: '2', name: '성수 소금빵 베이커리', lat: 37.54612, lng: 127.05834, isVisited: true, address: '서울 성동구 아차산로', group: '9월 10일 약속' },
+  { id: '3', name: '서울숲 산책로', lat: 37.54308, lng: 127.04179, isVisited: true, address: '서울 성동구 뚝섬로', group: '서울' },
 ];
 
 const ROOMS_STORAGE_KEY = 'routy_rooms_v2';
 const CURRENT_ROOM_KEY = 'routy_current_room_code';
 const generateCode = () => Math.random().toString(36).substring(2, 8).toUpperCase();
-const getTodayDate = () => {
-  const today = new Date();
-  return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
-};
 
 interface DateMapProps {
   externalNewPlace?: Place | null;
 }
 
 export default function DateMap({ externalNewPlace }: DateMapProps) {
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get('q') || '';
+
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
-  const polylineRef = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]);
 
   const [rooms, setRooms] = useState<MapRoom[]>([]);
   const [activeCode, setActiveCode] = useState<string>('');
-  const [viewMode, setViewMode] = useState<'map' | 'food'>('map'); // 탭 전환 (지도 vs 밸런스게임)
 
-  // 방 모달 상태
+  const [selectedGroup, setSelectedGroup] = useState<string>('전체');
+
+  // 하트 색상 변경 팝오버 상태
+  const [activeColorPicker, setActiveColorPicker] = useState(false);
+  const colorPickerContainerRef = useRef<HTMLDivElement>(null);
+
+  // 초대 코드 보기 토글 상태
+  const [showInviteCode, setShowInviteCode] = useState(false);
+
+  // 새 그룹 생성 모달 상태
+  const [showAddGroupModal, setShowAddGroupModal] = useState(false);
+  const [newGroupName, setNewGroupName] = useState('');
+  const [newGroupColorId, setNewGroupColorId] = useState('pastel-pink');
+
+  // 예쁜 커스텀 알림/확인 모달 상태
+  const [alertModalMessage, setAlertModalMessage] = useState<string | null>(null);
+  const [groupToDelete, setGroupToDelete] = useState<string | null>(null);
+
+  // 방 모달
   const [showRoomModal, setShowRoomModal] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'join'>('create');
   const [newRoomTitle, setNewRoomTitle] = useState('');
   const [joinRoomCode, setJoinRoomCode] = useState('');
   const [copyFeedback, setCopyFeedback] = useState(false);
 
-  // 지도 조작 상태
-  const [selectedCategory, setSelectedCategory] = useState<string>('전체');
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
+
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState('');
 
-  // 밸런스 게임 내부 상태
-  const [isFoodPlaying, setIsFoodPlaying] = useState(false);
-  const [foodStep, setFoodStep] = useState(0);
-  const [foodAnswers, setFoodAnswers] = useState<string[]>([]);
-
-  // 1. 방 초기 로드 및 날짜별 음식 결과 체크
+  // 1. 초기 데이터 로드 및 마이그레이션
   useEffect(() => {
     try {
       const saved = localStorage.getItem(ROOMS_STORAGE_KEY);
-      let loaded: MapRoom[] = saved ? JSON.parse(saved) : [];
+      let loaded: any[] = saved ? JSON.parse(saved) : [];
       const hash = window.location.hash.replace('#', '').toUpperCase();
-      const today = getTodayDate();
+
+      let hasMigration = false;
+      loaded = loaded.map((r: any) => {
+        let updated = { ...r };
+        if (updated.title.includes('데이트') || updated.title.includes('약속 플레이스')) {
+          hasMigration = true;
+          updated.title = '우리들의 찜 목록 📍';
+        }
+        if (!updated.groups || updated.groups.length === 0) {
+          hasMigration = true;
+          updated.groups = [...DEFAULT_GROUPS];
+        } else if (typeof updated.groups[0] === 'string') {
+          hasMigration = true;
+          updated.groups = updated.groups.map((nameStr: string, idx: number) => ({
+            name: nameStr,
+            colorId: HEART_PALETTE[idx % HEART_PALETTE.length].id,
+          }));
+        } else if (updated.groups[0].colorId === undefined) {
+          hasMigration = true;
+          updated.groups = updated.groups.map((g: any, idx: number) => ({
+            name: g.name,
+            colorId: HEART_PALETTE[idx % HEART_PALETTE.length].id,
+          }));
+        }
+        if (!updated.defaultHeartColorId) {
+          hasMigration = true;
+          updated.defaultHeartColorId = 'pastel-pink';
+        }
+        return updated;
+      });
 
       if (loaded.length === 0) {
         const code = hash && hash.length === 6 ? hash : generateCode();
-        loaded = [{
-          code,
-          title: '우리들의 데이트 아카이브 ❤️',
-          places: DEFAULT_PLACES,
-          updatedAt: Date.now(),
-          foodResult: { date: today }
-        }];
-      } else {
-        // 날짜가 바뀌었으면 방마다 음식 결과 초기화
-        loaded = loaded.map((r) => {
-          if (!r.foodResult || r.foodResult.date !== today) {
-            return { ...r, foodResult: { date: today } };
-          }
-          return r;
-        });
+        loaded = [
+          {
+            code,
+            title: '우리들의 찜 목록 📍',
+            places: DEFAULT_PLACES,
+            groups: DEFAULT_GROUPS,
+            defaultHeartColorId: 'pastel-pink',
+            updatedAt: Date.now(),
+          },
+        ];
+        hasMigration = true;
       }
 
       setRooms(loaded);
@@ -123,14 +164,31 @@ export default function DateMap({ externalNewPlace }: DateMapProps) {
       setActiveCode(target);
       window.location.hash = target;
       localStorage.setItem(CURRENT_ROOM_KEY, target);
-      localStorage.setItem(ROOMS_STORAGE_KEY, JSON.stringify(loaded));
+
+      if (hasMigration) {
+        localStorage.setItem(ROOMS_STORAGE_KEY, JSON.stringify(loaded));
+      }
     } catch {
       setStatus('error');
       setErrorMessage('데이터를 불러오지 못했습니다.');
     }
   }, []);
 
-  const currentRoom = rooms.find((r) => r.code === activeCode) || rooms[0];
+  // 외부 클릭 시 컬러 피커 닫기
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        colorPickerContainerRef.current &&
+        !colorPickerContainerRef.current.contains(e.target as Node)
+      ) {
+        setActiveColorPicker(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const currentRoom: MapRoom = rooms.find((r) => r.code === activeCode) || rooms[0];
 
   const updateCurrentRoom = (updater: (room: MapRoom) => MapRoom) => {
     if (!currentRoom) return;
@@ -141,7 +199,6 @@ export default function DateMap({ externalNewPlace }: DateMapProps) {
     });
   };
 
-  // 외부(카페 탭 등)에서 장소 추가 시
   useEffect(() => {
     if (!externalNewPlace) return;
     updateCurrentRoom((room) => ({
@@ -151,7 +208,52 @@ export default function DateMap({ externalNewPlace }: DateMapProps) {
     }));
   }, [externalNewPlace]);
 
-  // 2. 지도 SDK 초기화
+  const getHeartStyleForPlace = useCallback(
+    (place: Place) => {
+      if (!place.isVisited) {
+        return {
+          fill: '#FAF7F2',
+          stroke: '#D5C2AD',
+          strokeWidth: '2.5',
+        };
+      }
+      
+      let colorId = 'pastel-pink';
+      if (!place.group || !currentRoom?.groups?.some((g) => g.name === place.group)) {
+        colorId = currentRoom?.defaultHeartColorId || 'pastel-pink';
+      } else {
+        const matchedGroup = currentRoom?.groups?.find((g) => g.name === place.group);
+        if (matchedGroup) colorId = matchedGroup.colorId;
+      }
+
+      const colorConfig = HEART_PALETTE.find((c) => c.id === colorId) || HEART_PALETTE[0];
+      return {
+        fill: colorConfig.fill,
+        stroke: colorConfig.stroke,
+        strokeWidth: '2',
+      };
+    },
+    [currentRoom]
+  );
+
+  const executeSearch = useCallback((keyword: string) => {
+    if (!keyword.trim() || !window.kakao?.maps?.services) return;
+    setIsSearching(true);
+    const ps = new window.kakao.maps.services.Places();
+    ps.keywordSearch(keyword, (data: any, s: any) => {
+      setIsSearching(false);
+      if (s === window.kakao.maps.services.Status.OK) {
+        setSearchResults(data.slice(0, 5));
+        if (mapInstanceRef.current && data[0]) {
+          mapInstanceRef.current.panTo(new window.kakao.maps.LatLng(data[0].y, data[0].x));
+        }
+      } else {
+        setSearchResults([]);
+      }
+    });
+  }, []);
+
+  // 2. 카카오 지도 SDK 초기화
   useEffect(() => {
     const apiKey = process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY;
     if (!apiKey) {
@@ -166,9 +268,19 @@ export default function DateMap({ externalNewPlace }: DateMapProps) {
         if (!mapContainerRef.current) return;
         const center = new window.kakao.maps.LatLng(37.54458, 127.05603);
         const map = new window.kakao.maps.Map(mapContainerRef.current, { center, level: 4 });
+        
+        // 지도 배경(여백) 클릭 시 선택된 장소 해제
+        window.kakao.maps.event.addListener(map, 'click', () => {
+          setSelectedPlaceId(null);
+        });
+
         map.addControl(new window.kakao.maps.ZoomControl(), window.kakao.maps.ControlPosition.RIGHT);
         mapInstanceRef.current = map;
         setStatus('ready');
+
+        if (initialQuery) {
+          executeSearch(initialQuery);
+        }
       });
     };
 
@@ -191,152 +303,182 @@ export default function DateMap({ externalNewPlace }: DateMapProps) {
 
     return () => {
       overlaysRef.current.forEach((o) => o.setMap(null));
-      if (polylineRef.current) polylineRef.current.setMap(null);
     };
-  }, []);
+  }, [executeSearch, initialQuery]);
 
-  // 3. 마커 & 동선 렌더링
+  // 3. 지도 마커 렌더링
   useEffect(() => {
     const map = mapInstanceRef.current;
-    if (!map || status !== 'ready' || !currentRoom || viewMode !== 'map') return;
+    if (!map || status !== 'ready' || !currentRoom) return;
 
     overlaysRef.current.forEach((o) => o.setMap(null));
     overlaysRef.current = [];
-    if (polylineRef.current) polylineRef.current.setMap(null);
 
-    const filtered = currentRoom.places.filter((p) =>
-      selectedCategory === '전체' ? true : p.category === selectedCategory
-    );
+    const filteredPlaces = currentRoom.places.filter((p) => {
+      if (selectedGroup === '전체') return true;
+      if (selectedGroup === '기본 찜') return !p.group || !currentRoom.groups.some((g) => g.name === p.group);
+      return p.group === selectedGroup;
+    });
 
-    if (filtered.length > 1) {
-      polylineRef.current = new window.kakao.maps.Polyline({
-        path: filtered.map((p) => new window.kakao.maps.LatLng(p.lat, p.lng)),
-        strokeWeight: 4,
-        strokeColor: '#334155',
-        strokeOpacity: 0.8,
-        strokeStyle: 'dashed',
-      });
-      polylineRef.current.setMap(map);
-    }
-
-    filtered.forEach((place) => {
+    filteredPlaces.forEach((place, idx) => {
       const position = new window.kakao.maps.LatLng(place.lat, place.lng);
       const isSelected = selectedPlaceId === place.id;
+      const heartStyle = getHeartStyleForPlace(place);
+
       const markerEl = document.createElement('div');
       markerEl.className = 'flex flex-col items-center cursor-pointer select-none';
 
-      const heartSvg = place.isVisited
-        ? `<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="#ef4444" stroke="#dc2626" stroke-width="1.5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`
-        : `<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="#ffffff" stroke="#ef4444" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>`;
+      const heartSvg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="${heartStyle.fill}" stroke="${heartStyle.stroke}" stroke-width="${heartStyle.strokeWidth}">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+      `;
 
       markerEl.innerHTML = `
-        <div style="filter: drop-shadow(0 4px 6px rgba(15,23,42,0.25)); transition: transform 0.2s;" class="${isSelected ? 'scale-125' : 'hover:scale-110'}">
+        <div style="filter: drop-shadow(0 4px 8px rgba(45,36,30,0.18)); transition: transform 0.2s;" class="${isSelected ? 'scale-125' : 'hover:scale-110'}">
           ${heartSvg}
         </div>
-        <span style="background: ${isSelected ? '#0f172a' : '#ffffff'}; color: ${isSelected ? '#ffffff' : '#1e293b'}; border: 1.5px solid ${isSelected ? '#ef4444' : '#cbd5e1'}; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 700; margin-top: 3px; box-shadow: 0 2px 5px rgba(15,23,42,0.1); white-space: nowrap;">
-          ${CATEGORY_ICONS[place.category] || '📍'} ${place.name}
+        <span style="background: ${isSelected ? '#2D241E' : '#FFFFFF'}; color: ${isSelected ? '#F3D5B5' : '#2D241E'}; border: 2px solid ${isSelected ? '#C25E3E' : '#EADFCF'}; padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; margin-top: 3px; box-shadow: 0 3px 8px rgba(74,59,50,0.08); white-space: nowrap; font-family: 'GmarketSansBold', sans-serif;">
+          📍 ${place.name}
         </span>
       `;
 
       markerEl.addEventListener('click', (e) => {
         e.stopPropagation();
-        setSelectedPlaceId(place.id);
-        toggleVisited(place.id);
+        // 이미 선택된 장소를 다시 누르면 선택 해제(토글), 아니면 선택
+        setSelectedPlaceId((prev) => (prev === place.id ? null : place.id));
       });
 
       const overlay = new window.kakao.maps.CustomOverlay({ position, content: markerEl, yAnchor: 1.15 });
       overlay.setMap(map);
       overlaysRef.current.push(overlay);
     });
-  }, [currentRoom, selectedCategory, selectedPlaceId, status, viewMode]);
+  }, [currentRoom, selectedGroup, selectedPlaceId, status, getHeartStyleForPlace]);
 
-  const toggleVisited = (id: string) => {
-    updateCurrentRoom((room) => ({
-      ...room,
-      places: room.places.map((p) => (p.id === id ? { ...p, isVisited: !p.isVisited } : p)),
-    }));
+  const toggleVisited = (id: string, targetIdx?: number) => {
+    updateCurrentRoom((room) => {
+      let count = 0;
+      return {
+        ...room,
+        places: room.places.map((p, idx) => {
+          if (p.id === id) {
+            const isMatch = targetIdx !== undefined ? count === targetIdx : true;
+            count++;
+            if (isMatch) return { ...p, isVisited: !p.isVisited };
+          }
+          return p;
+        }),
+      };
+    });
   };
 
-  const focusPlace = (place: { lat: number; lng: number; id?: string }) => {
-    if (place.id) setSelectedPlaceId(place.id);
+  // 장소 클릭 시 선택 토글 적용
+  const handleSelectOrUnselectPlace = (place: Place) => {
+    if (selectedPlaceId === place.id) {
+      setSelectedPlaceId(null);
+    } else {
+      focusPlace(place);
+    }
+  };
+
+  const focusPlace = (place: Place) => {
+    setSelectedPlaceId(place.id);
     if (!mapInstanceRef.current) return;
     mapInstanceRef.current.setLevel(3);
     mapInstanceRef.current.panTo(new window.kakao.maps.LatLng(place.lat, place.lng));
   };
 
-  const removePlace = (id: string) => {
+  const removePlaceItem = (placeId: string, targetIdx: number) => {
+    updateCurrentRoom((room) => {
+      let count = 0;
+      return {
+        ...room,
+        places: room.places.filter((p) => {
+          if (p.id === placeId) {
+            const isMatch = count === targetIdx;
+            count++;
+            return !isMatch;
+          }
+          return true;
+        }),
+      };
+    });
+    if (selectedPlaceId === placeId) setSelectedPlaceId(null);
+  };
+
+  const handleUpdateActiveColor = (newColorId: string) => {
+    if (selectedGroup === '기본 찜') {
+      updateCurrentRoom((room) => ({
+        ...room,
+        defaultHeartColorId: newColorId,
+        updatedAt: Date.now(),
+      }));
+    } else {
+      updateCurrentRoom((room) => ({
+        ...room,
+        groups: room.groups.map((g) => (g.name === selectedGroup ? { ...g, colorId: newColorId } : g)),
+        updatedAt: Date.now(),
+      }));
+    }
+    setActiveColorPicker(false);
+  };
+
+  const handleAddGroup = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newGroupName.trim();
+    if (!trimmed) return;
+    if (currentRoom.groups?.some((g) => g.name === trimmed)) {
+      setAlertModalMessage('이미 존재하는 그룹 이름입니다.');
+      return;
+    }
+
+    const nextGroups = [...(currentRoom.groups || []), { name: trimmed, colorId: newGroupColorId }];
     updateCurrentRoom((room) => ({
       ...room,
-      places: room.places.filter((p) => p.id !== id),
+      groups: nextGroups,
+      updatedAt: Date.now(),
     }));
-    if (selectedPlaceId === id) setSelectedPlaceId(null);
+
+    setSelectedGroup(trimmed);
+    setNewGroupName('');
+    setShowAddGroupModal(false);
   };
 
-  // 장소 검색
+  const confirmDeleteGroup = () => {
+    if (!groupToDelete) return;
+    const nextGroups = (currentRoom.groups || []).filter((g) => g.name !== groupToDelete);
+    updateCurrentRoom((room) => ({
+      ...room,
+      groups: nextGroups,
+      places: room.places.filter((p) => p.group !== groupToDelete),
+    }));
+    if (selectedGroup === groupToDelete) setSelectedGroup('전체');
+    setGroupToDelete(null);
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchQuery.trim() || !window.kakao?.maps?.services) return;
-    setIsSearching(true);
-    const ps = new window.kakao.maps.services.Places();
-    ps.keywordSearch(searchQuery, (data: any, s: any) => {
-      setIsSearching(false);
-      if (s === window.kakao.maps.services.Status.OK) {
-        setSearchResults(data.slice(0, 5));
-      } else {
-        alert('검색 결과가 없습니다.');
-        setSearchResults([]);
-      }
-    });
+    if (selectedGroup === '전체') return;
+    executeSearch(searchQuery);
   };
 
-  const addPlaceFromSearch = (item: any, category: '식당' | '카페' | '활동') => {
+  const addPlaceFromSearch = (item: any) => {
+    if (selectedGroup === '전체') return;
+    const assignedGroup = selectedGroup === '기본 찜' ? undefined : selectedGroup;
     const newPlace: Place = {
       id: String(item.id || Date.now()),
       name: item.place_name,
-      category,
       lat: parseFloat(item.y),
       lng: parseFloat(item.x),
       isVisited: false,
       address: item.road_address_name || item.address_name,
+      group: assignedGroup,
     };
+
     updateCurrentRoom((room) => ({ ...room, places: [newPlace, ...room.places] }));
     setSearchResults([]);
     setSearchQuery('');
-    setViewMode('map');
     focusPlace(newPlace);
-  };
-
-  // 밸런스 게임 로직
-  const startFoodGame = () => {
-    setIsFoodPlaying(true);
-    setFoodStep(0);
-    setFoodAnswers([]);
-  };
-
-  const handleFoodSelect = (choice: string) => {
-    const nextAnswers = [...foodAnswers, choice];
-    setFoodAnswers(nextAnswers);
-
-    if (foodStep < QUESTIONS.length - 1) {
-      setFoodStep(foodStep + 1);
-    } else {
-      setIsFoodPlaying(false);
-      const text = nextAnswers.join(' ');
-      let result = '김치찌개와 계란말이';
-      if (text.includes('면') && text.includes('국물')) result = '얼큰한 짬뽕 또는 라멘';
-      else if (text.includes('고기') && text.includes('구이')) result = '육즙 가득 삼겹살 구이';
-      else if (text.includes('해산물') && text.includes('매운맛')) result = '매콤한 해물찜 또는 낙지볶음';
-      else if (text.includes('밥') && text.includes('담백')) result = '정갈한 초밥 또는 생선구이';
-
-      updateCurrentRoom((room) => ({
-        ...room,
-        foodResult: {
-          ...room.foodResult,
-          date: getTodayDate(),
-          myResult: result,
-        },
-      }));
-    }
   };
 
   const switchRoom = (code: string) => {
@@ -344,14 +486,18 @@ export default function DateMap({ externalNewPlace }: DateMapProps) {
     window.location.hash = code;
     localStorage.setItem(CURRENT_ROOM_KEY, code);
     setSelectedPlaceId(null);
+    setSelectedGroup('전체');
+    setShowInviteCode(false);
   };
 
   const handleCreateRoom = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newRoomTitle.trim()) return;
     const code = generateCode();
-    const today = getTodayDate();
-    const updated = [{ code, title: newRoomTitle.trim(), places: [], updatedAt: Date.now(), foodResult: { date: today } }, ...rooms];
+    const updated = [
+      { code, title: newRoomTitle.trim(), places: [], groups: [...DEFAULT_GROUPS], defaultHeartColorId: 'pastel-pink', updatedAt: Date.now() },
+      ...rooms,
+    ];
     setRooms(updated);
     localStorage.setItem(ROOMS_STORAGE_KEY, JSON.stringify(updated));
     switchRoom(code);
@@ -362,10 +508,15 @@ export default function DateMap({ externalNewPlace }: DateMapProps) {
   const handleJoinRoom = (e: React.FormEvent) => {
     e.preventDefault();
     const clean = joinRoomCode.trim().toUpperCase();
-    if (clean.length !== 6) return alert('6자리 코드를 입력해주세요.');
-    const today = getTodayDate();
+    if (clean.length !== 6) {
+      setAlertModalMessage('6자리 코드를 입력해주세요.');
+      return;
+    }
     if (!rooms.some((r) => r.code === clean)) {
-      const updated = [{ code: clean, title: newRoomTitle.trim() || `${clean}의 지도`, places: DEFAULT_PLACES, updatedAt: Date.now(), foodResult: { date: today } }, ...rooms];
+      const updated = [
+        { code: clean, title: newRoomTitle.trim() || `${clean}의 지도`, places: DEFAULT_PLACES, groups: [...DEFAULT_GROUPS], defaultHeartColorId: 'pastel-pink', updatedAt: Date.now() },
+        ...rooms,
+      ];
       setRooms(updated);
       localStorage.setItem(ROOMS_STORAGE_KEY, JSON.stringify(updated));
     }
@@ -375,325 +526,523 @@ export default function DateMap({ externalNewPlace }: DateMapProps) {
     setShowRoomModal(false);
   };
 
+  const roomGroups = currentRoom?.groups || DEFAULT_GROUPS;
+
+  const filterPlaces = (p: Place) => {
+    if (selectedGroup === '전체') return true;
+    if (selectedGroup === '기본 찜') return !p.group || !roomGroups.some((g) => g.name === p.group);
+    return p.group === selectedGroup;
+  };
+
+  let activeColorId = 'pastel-pink';
+  if (selectedGroup === '기본 찜') {
+    activeColorId = currentRoom?.defaultHeartColorId || 'pastel-pink';
+  } else if (selectedGroup !== '전체') {
+    const matched = roomGroups.find((g) => g.name === selectedGroup);
+    if (matched) activeColorId = matched.colorId;
+  }
+  const activeColorConfig = HEART_PALETTE.find((c) => c.id === activeColorId) || HEART_PALETTE[0];
+
   return (
-    <div className="flex flex-col gap-4">
-      {/* 1. 상단 방(Room) 선택 및 서랍 헤더 */}
-      <div className="bg-slate-900 text-white p-3.5 rounded-2xl flex flex-col gap-3 shadow-md border border-slate-800">
+    <div className="flex flex-col gap-4 text-[#2D241E]">
+      
+      {/* 1. 상단 룸 관리 바 */}
+      <div className="bg-[#3B2F27] text-white p-4 rounded-[26px] flex flex-col gap-3 shadow-[0_8px_24px_rgba(59,47,39,0.12)] border-2 border-[#2D241E]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 overflow-hidden">
-            <span className="text-[11px] font-bold text-slate-300 bg-slate-800 px-2 py-0.5 rounded border border-slate-700 shrink-0">ROOM</span>
+            <span className="font-title text-[10px] bg-[#524237] text-[#E8DCC4] px-2 py-0.5 rounded-md border border-[#695547] shrink-0">
+              ROOM
+            </span>
             <select
               value={activeCode}
               onChange={(e) => switchRoom(e.target.value)}
-              className="bg-slate-800 text-slate-100 font-bold text-sm rounded-lg px-2.5 py-1.5 border border-slate-700 outline-none truncate cursor-pointer hover:bg-slate-750"
+              className="font-title bg-[#4D3E34] text-[#F3D5B5] text-xs rounded-xl px-2.5 py-1.5 border border-[#614F43] outline-none truncate cursor-pointer hover:bg-[#59483D]"
             >
               {rooms.map((room) => (
                 <option key={room.code} value={room.code}>{room.title}</option>
               ))}
             </select>
           </div>
+
           <button
             onClick={() => setShowRoomModal(true)}
-            className="text-xs font-semibold px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition"
+            className="font-title text-xs px-3 py-1.5 bg-[#524237] hover:bg-[#614F43] text-[#F3D5B5] rounded-xl border border-[#695547] transition active:scale-95"
           >
-            + 새 방/참여
+            + 새 방
           </button>
         </div>
 
-        <div className="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
-          <div className="flex items-center gap-1.5 text-slate-400">
-            <span>초대 코드:</span>
-            <span className="font-mono font-bold text-slate-200 tracking-wider bg-slate-800 px-2 py-0.5 rounded">{activeCode}</span>
-          </div>
+        <div className="flex items-center justify-between pt-2 border-t border-[#4D3E34] text-xs">
           <button
-            onClick={() => {
-              navigator.clipboard.writeText(`${window.location.origin}#${activeCode}`);
-              setCopyFeedback(true);
-              setTimeout(() => setCopyFeedback(false), 2000);
-            }}
-            className="text-xs text-red-400 hover:text-red-300 font-semibold"
+            onClick={() => setShowInviteCode(!showInviteCode)}
+            className="font-title text-xs text-[#C8B8A6] hover:text-[#F3D5B5] flex items-center gap-1 transition"
           >
-            {copyFeedback ? '링크 복사됨! ✨' : '공유 링크 복사'}
+            <span>🔑</span>
+            <span>{showInviteCode ? '초대 코드 숨기기' : '초대 코드 보기'}</span>
           </button>
+
+          {showInviteCode && (
+            <div className="flex items-center gap-2 animate-in fade-in duration-200">
+              <span className="font-title font-mono text-[#F3D5B5] tracking-wider bg-[#2D241E] px-2 py-0.5 rounded-md text-xs">
+                {activeCode}
+              </span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(`${window.location.origin}#${activeCode}`);
+                  setCopyFeedback(true);
+                  setTimeout(() => setCopyFeedback(false), 2000);
+                }}
+                className="font-title text-xs text-[#E8DCC4] hover:text-white"
+              >
+                {copyFeedback ? '링크 복사됨! ✨' : '링크 복사'}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* 2. 방 안에서의 기능 탭 전환 (지도 vs 오늘 뭐 먹지) */}
-      <div className="flex bg-slate-200/80 p-1 rounded-2xl text-xs font-bold">
-        <button
-          onClick={() => setViewMode('map')}
-          className={`flex-1 py-2 rounded-xl transition flex items-center justify-center gap-1.5 ${
-            viewMode === 'map' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-          }`}
-        >
-          <span>🗺️ 장소 지도 아카이브</span>
-        </button>
-        <button
-          onClick={() => setViewMode('food')}
-          className={`flex-1 py-2 rounded-xl transition flex items-center justify-center gap-1.5 ${
-            viewMode === 'food' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-          }`}
-        >
-          <span>🍕 오늘 뭐 먹지? (밸런스 게임)</span>
-        </button>
-      </div>
-
-      {/* 3. 뷰 모드에 따른 분기 렌더링 */}
-      {viewMode === 'map' ? (
-        <>
-          {/* 검색창 & 필터 */}
-          <div className="flex flex-col gap-2.5">
-            <form onSubmit={handleSearch} className="flex gap-2">
-              <input
-                type="text"
-                placeholder="장소 검색 후 아카이브에 추가 (예: 성수 대림창고)"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 px-4 py-2.5 text-sm bg-white rounded-xl border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-800 shadow-sm"
-              />
+      {/* 2. 장소 검색창 & 하트색 설정 바 */}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between px-1">
+          <span className="font-title text-xs text-[#7A6251]">장소 추가 및 검색</span>
+          
+          {selectedGroup !== '전체' && (
+            <div ref={colorPickerContainerRef} className="relative">
               <button
-                type="submit"
-                disabled={isSearching}
-                className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold rounded-xl transition shadow-sm"
+                onClick={() => setActiveColorPicker(!activeColorPicker)}
+                title="현재 대상 하트 색상 변경"
+                className="px-2.5 py-1 bg-white hover:bg-[#FAF7F2] border border-[#EADFCF] rounded-xl shadow-2xs transition flex items-center gap-1.5 active:scale-95"
               >
-                {isSearching ? '검색중' : '검색'}
+                <span
+                  className="w-3.5 h-3.5 rounded-full inline-block border border-black/10 shadow-xs"
+                  style={{ backgroundColor: activeColorConfig.fill }}
+                />
+                <span className="font-title text-[11px] text-[#7A6251]">하트색 ⚙️</span>
               </button>
-            </form>
 
-            {searchResults.length > 0 && (
-              <div className="p-2 bg-white rounded-2xl border border-slate-200 shadow-xl flex flex-col gap-1.5 z-20">
-                <span className="text-xs font-bold text-slate-500 px-2 py-1">추가할 카테고리를 선택하세요</span>
-                {searchResults.map((res) => (
-                  <div key={res.id} className="p-2 hover:bg-slate-50 rounded-xl flex items-center justify-between border border-slate-100">
-                    <div className="text-left overflow-hidden pr-2">
-                      <p className="text-sm font-bold text-slate-900 truncate">{res.place_name}</p>
-                      <p className="text-xs text-slate-400 truncate">{res.road_address_name || res.address_name}</p>
-                    </div>
-                    <div className="flex gap-1 shrink-0">
-                      <button onClick={() => addPlaceFromSearch(res, '식당')} className="px-2 py-1 text-xs bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200 font-medium">🍽️ 식당</button>
-                      <button onClick={() => addPlaceFromSearch(res, '카페')} className="px-2 py-1 text-xs bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200 font-medium">☕ 카페</button>
-                      <button onClick={() => addPlaceFromSearch(res, '활동')} className="px-2 py-1 text-xs bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200 font-medium">🎡 활동</button>
-                    </div>
+              {activeColorPicker && (
+                <div className="absolute right-0 top-8 z-50 p-3 bg-white text-[#2D241E] rounded-2xl border-2 border-[#EADFCF] shadow-xl flex flex-col gap-2 w-44 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="flex justify-between items-center pb-1 border-b border-[#F2EAE0]">
+                    <span className="font-title text-[10px] text-[#7A6251]">
+                      {selectedGroup === '기본 찜' ? '기본 찜 하트색' : `'${selectedGroup}' 하트색`}
+                    </span>
+                    <button
+                      onClick={() => setActiveColorPicker(false)}
+                      className="text-[10px] text-[#A89889] hover:text-[#2D241E]"
+                    >
+                      ✕
+                    </button>
                   </div>
-                ))}
-              </div>
-            )}
 
-            <div className="flex gap-1.5 items-center overflow-x-auto pb-1">
-              {['전체', '식당', '카페', '활동'].map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition whitespace-nowrap shadow-sm ${
-                    selectedCategory === cat ? 'bg-slate-900 text-white shadow-slate-300' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
-                  }`}
-                >
-                  {cat === '전체' ? '모아보기' : `${CATEGORY_ICONS[cat]} ${cat}`}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* 지도 영역 */}
-          <div className="relative w-full h-[400px] rounded-3xl overflow-hidden shadow-md border border-slate-200 bg-slate-100">
-            {status === 'loading' && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-50/85 z-20">
-                <div className="w-8 h-8 border-3 border-slate-800 border-t-transparent rounded-full animate-spin" />
-                <p className="text-xs font-semibold text-slate-600">지도를 불러오고 있습니다</p>
-              </div>
-            )}
-            {status === 'error' && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-slate-50 z-20">
-                <p className="text-red-500 font-bold mb-1">지도를 띄울 수 없습니다</p>
-                <p className="text-xs text-slate-500">{errorMessage}</p>
-              </div>
-            )}
-            <div ref={mapContainerRef} className="w-full h-full" />
-            <div className="absolute top-4 left-4 z-10 bg-slate-900/85 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md text-xs font-medium text-slate-100 border border-slate-700 pointer-events-none flex items-center gap-2">
-              <span>🤍 찜</span>
-              <span className="text-slate-500">|</span>
-              <span className="text-red-400 font-semibold">❤️ 다녀옴</span>
-            </div>
-          </div>
-
-          {/* 장소 목록 리스트 */}
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center px-1">
-              <h2 className="text-sm font-bold text-slate-800">{currentRoom?.title} ({currentRoom?.places.length || 0}곳)</h2>
-              <span className="text-xs text-slate-400">카드를 누르면 지도가 이동합니다</span>
-            </div>
-
-            <div className="flex flex-col gap-2 max-h-[260px] overflow-y-auto pr-1">
-              {currentRoom?.places.length === 0 ? (
-                <div className="p-8 text-center bg-white rounded-2xl border border-dashed border-slate-200 text-xs text-slate-400">
-                  등록된 장소가 없습니다. 상단에서 장소를 검색해보세요!
-                </div>
-              ) : (
-                currentRoom?.places
-                  .filter((p) => (selectedCategory === '전체' ? true : p.category === selectedCategory))
-                  .map((place, idx) => {
-                    const isSelected = selectedPlaceId === place.id;
-                    return (
-                      <div
-                        key={place.id}
-                        onClick={() => focusPlace(place)}
-                        className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between cursor-pointer ${
-                          isSelected ? 'bg-slate-900 text-white border-slate-900 shadow-md scale-[1.01]' : 'bg-white text-slate-800 border-slate-200 hover:border-slate-300'
+                  <div className="flex flex-col gap-1 pt-0.5">
+                    {HEART_PALETTE.map((palette) => (
+                      <button
+                        key={palette.id}
+                        onClick={() => handleUpdateActiveColor(palette.id)}
+                        className={`px-2.5 py-1.5 rounded-xl text-left text-xs transition flex items-center justify-between ${
+                          activeColorId === palette.id
+                            ? 'bg-[#FAF7F2] font-bold text-[#2D241E] border border-[#EADFCF]'
+                            : 'hover:bg-[#F9ECE7] text-[#7A6251]'
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <span className="w-5 text-center text-xs font-bold text-slate-400">{String(idx + 1).padStart(2, '0')}</span>
-                          <div>
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-xs">{CATEGORY_ICONS[place.category]}</span>
-                              <span className="text-sm font-bold tracking-tight">{place.name}</span>
-                            </div>
-                            {place.address && <p className="text-xs text-slate-400 mt-0.5">{place.address}</p>}
-                          </div>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="w-3.5 h-3.5 rounded-full border"
+                            style={{ backgroundColor: palette.fill, borderColor: palette.stroke }}
+                          />
+                          <span className="text-[11px] font-title">{palette.name}</span>
                         </div>
-                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                          <button onClick={() => toggleVisited(place.id)} className="p-1 text-xl active:scale-90 transition-transform">
-                            {place.isVisited ? '❤️' : '🤍'}
-                          </button>
-                          <button onClick={() => removePlace(place.id)} className={`text-xs px-2 py-1 rounded transition ${isSelected ? 'text-slate-400 hover:text-slate-200' : 'text-slate-300 hover:text-slate-500'}`}>
-                            ✕
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })
+                        {activeColorId === palette.id && (
+                          <span className="text-[10px] text-[#C25E3E]">✓</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
-          </div>
-        </>
-      ) : (
-        /* 밸런스 게임 뷰 모드 */
-        <div className="flex flex-col gap-4 animate-in fade-in duration-200">
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm min-h-[340px] flex flex-col justify-center relative overflow-hidden">
-            {!isFoodPlaying && !currentRoom?.foodResult?.myResult ? (
-              <div className="text-center flex flex-col items-center gap-4">
-                <div className="text-5xl">🍕</div>
-                <div>
-                  <h2 className="text-xl font-black text-slate-900">오늘 방 멤버와 뭐 먹지?</h2>
-                  <p className="text-sm text-slate-500 mt-2 leading-relaxed">
-                    4가지 질문에 답하면 이 방에 공유된<br/>오늘의 추천 메뉴가 완성됩니다.
-                  </p>
-                </div>
-                <button
-                  onClick={startFoodGame}
-                  className="mt-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-full transition active:scale-95 shadow-md"
-                >
-                  취향 밸런스 게임 시작
-                </button>
-              </div>
-            ) : isFoodPlaying ? (
-              <div className="flex flex-col h-full w-full">
-                <div className="text-center mb-6">
-                  <span className="text-xs font-bold text-slate-400 tracking-widest">
-                    STEP {foodStep + 1} / {QUESTIONS.length}
-                  </span>
-                  <h2 className="text-lg font-black text-slate-800 mt-1">
-                    {QUESTIONS[foodStep].title}
-                  </h2>
-                </div>
+          )}
+        </div>
 
-                <div className="flex flex-col gap-3 flex-1 justify-center">
-                  <button
-                    onClick={() => handleFoodSelect(QUESTIONS[foodStep].optionA)}
-                    className="w-full py-6 bg-slate-50 hover:bg-red-50 border-2 border-slate-100 hover:border-red-200 text-slate-800 rounded-2xl font-bold text-base transition transform active:scale-[0.98]"
-                  >
-                    {QUESTIONS[foodStep].optionA}
-                  </button>
-                  <div className="text-center text-xs font-black text-slate-300 relative">
-                    <span className="bg-white px-2 relative z-10">VS</span>
-                    <div className="absolute top-1/2 left-0 right-0 h-px bg-slate-100 -z-0" />
-                  </div>
-                  <button
-                    onClick={() => handleFoodSelect(QUESTIONS[foodStep].optionB)}
-                    className="w-full py-6 bg-slate-50 hover:bg-blue-50 border-2 border-slate-100 hover:border-blue-200 text-slate-800 rounded-2xl font-bold text-base transition transform active:scale-[0.98]"
-                  >
-                    {QUESTIONS[foodStep].optionB}
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center flex flex-col items-center gap-4">
-                <span className="text-xs font-bold text-red-500 bg-red-50 px-3 py-1 rounded-full">
-                  오늘의 추천 메뉴 완성 ✨
-                </span>
-                <h2 className="text-2xl font-black text-slate-900">{currentRoom?.foodResult?.myResult}</h2>
-                <p className="text-xs text-slate-400">방 멤버와 아래 결과를 비교해 보세요!</p>
-                <button
-                  onClick={startFoodGame}
-                  className="mt-4 text-xs font-bold text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-4"
-                >
-                  다시 선택하기 (결과 갱신)
-                </button>
-              </div>
-            )}
-          </div>
+        <form onSubmit={handleSearch} className="flex gap-2">
+          <input
+            type="text"
+            placeholder={selectedGroup === '전체' ? '모아보기 중에는 조회만 가능합니다 (폴더를 선택해주세요)' : '장소 검색 후 내 코스에 추가 (예: 대림창고)'}
+            value={searchQuery}
+            disabled={selectedGroup === '전체'}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={`font-body flex-1 px-4 py-3 text-xs rounded-2xl border-2 text-[#2D241E] shadow-xs focus:outline-none ${
+              selectedGroup === '전체'
+                ? 'bg-[#F2ECE4] border-[#EADFCF] text-[#A89889] cursor-not-allowed placeholder:text-[#8C7A6B]'
+                : 'bg-white border-[#EADFCF] focus:border-[#C25E3E]'
+            }`}
+          />
+          <button
+            type="submit"
+            disabled={isSearching || selectedGroup === '전체'}
+            className={`font-title px-5 py-3 text-xs rounded-2xl transition shadow-xs shrink-0 active:scale-95 ${
+              selectedGroup === '전체'
+                ? 'bg-[#D5C2AD] text-[#FAF7F2] cursor-not-allowed'
+                : 'bg-[#2D241E] hover:bg-[#43362E] text-white'
+            }`}
+          >
+            {isSearching ? '검색중' : '검색'}
+          </button>
+        </form>
 
-          {/* 방 멤버별 결과 현황판 */}
-          <div className="bg-slate-900 text-white p-5 rounded-3xl shadow-lg border border-slate-800 flex flex-col gap-4">
-            <div className="flex justify-between items-center pb-3 border-b border-slate-700/50">
-              <h3 className="text-sm font-bold text-slate-200">현재 방 멤버 메뉴 선택 현황</h3>
-              <span className="text-[10px] font-semibold text-slate-400 bg-slate-800 px-2 py-0.5 rounded">매일 자정 갱신</span>
+        {/* 검색 결과 목록 */}
+        {searchResults.length > 0 && selectedGroup !== '전체' && (
+          <div className="p-3 bg-white rounded-[24px] border-2 border-[#EADFCF] shadow-xl flex flex-col gap-2 z-20">
+            <div className="flex justify-between items-center px-1">
+              <span className="font-title text-xs text-[#7A6251]">검색 결과 (장소 추가)</span>
+              <button onClick={() => setSearchResults([])} className="font-title text-xs text-[#A89889] hover:text-[#2D241E]">
+                닫기 ✕
+              </button>
             </div>
-
-            <div className="flex gap-4">
-              <div className="flex-1 flex flex-col gap-1.5">
-                <span className="text-xs text-slate-400 font-semibold">나의 선택</span>
-                <div className={`p-3 rounded-xl border flex items-center justify-center min-h-[55px] text-sm font-bold text-center ${
-                  currentRoom?.foodResult?.myResult ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-800/50 border-dashed border-slate-700 text-slate-500'
-                }`}>
-                  {currentRoom?.foodResult?.myResult || '❌ 미참여'}
+            {searchResults.map((res, sIdx) => (
+              <div key={`search-${res.id}-${sIdx}`} className="p-3 bg-[#FAF7F2] hover:bg-[#F6EFE6] rounded-xl flex items-center justify-between border border-[#EADFCF]">
+                <div className="text-left overflow-hidden pr-2">
+                  <p className="font-title text-xs text-[#2D241E] truncate">{res.place_name}</p>
+                  <p className="font-body text-[11px] text-[#8C7A6B] truncate">{res.road_address_name || res.address_name}</p>
                 </div>
+                <button
+                  onClick={() => addPlaceFromSearch(res)}
+                  className="font-title px-3 py-1.5 text-xs bg-[#2D241E] text-white rounded-xl hover:bg-[#43362E] transition active:scale-95 shrink-0"
+                >
+                  + 찜하기
+                </button>
               </div>
+            ))}
+          </div>
+        )}
 
-              <div className="flex-1 flex flex-col gap-1.5">
-                <span className="text-xs text-slate-400 font-semibold">상대방 선택</span>
-                <div className={`p-3 rounded-xl border flex items-center justify-center min-h-[55px] text-sm font-bold text-center ${
-                  currentRoom?.foodResult?.partnerResult ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-800/50 border-dashed border-slate-700 text-slate-500'
-                }`}>
-                  {currentRoom?.foodResult?.partnerResult || '⏳ 대기중'}
-                </div>
+        {/* 3. 찜 그룹 탭 바 */}
+        <div className="flex gap-2 items-center overflow-x-auto pb-1 no-scrollbar pt-1">
+          <button
+            onClick={() => setSelectedGroup('전체')}
+            className={`font-title px-3.5 py-1.5 rounded-xl text-xs transition whitespace-nowrap active:scale-95 ${
+              selectedGroup === '전체'
+                ? 'bg-[#2D241E] text-[#F3D5B5] shadow-xs'
+                : 'bg-white text-[#7A6251] border-2 border-[#EADFCF] hover:bg-[#FAF7F2]'
+            }`}
+          >
+            모아보기
+          </button>
+
+          <button
+            onClick={() => setSelectedGroup('기본 찜')}
+            className={`font-title px-3.5 py-1.5 rounded-xl text-xs transition whitespace-nowrap active:scale-95 ${
+              selectedGroup === '기본 찜'
+                ? 'bg-[#2D241E] text-[#F3D5B5] shadow-xs'
+                : 'bg-white text-[#7A6251] border-2 border-[#EADFCF] hover:bg-[#FAF7F2]'
+            }`}
+          >
+            🤍 기본 찜
+          </button>
+
+          {roomGroups.map((grp) => {
+            const isActive = selectedGroup === grp.name;
+            return (
+              <div
+                key={grp.name}
+                className={`flex items-center shrink-0 rounded-xl border-2 transition-all overflow-hidden ${
+                  isActive ? 'bg-[#2D241E] border-[#2D241E] shadow-xs' : 'bg-white border-[#EADFCF] hover:border-[#D5C2AD]'
+                }`}
+              >
+                <button
+                  onClick={() => setSelectedGroup(grp.name)}
+                  className={`font-title px-3.5 py-1.5 text-xs transition whitespace-nowrap active:scale-95 ${
+                    isActive ? 'text-[#F3D5B5]' : 'text-[#7A6251]'
+                  }`}
+                >
+                  📁 {grp.name}
+                </button>
+                <button
+                  onClick={() => setGroupToDelete(grp.name)}
+                  title="그룹 삭제"
+                  className={`font-title px-2.5 py-1.5 text-[10px] transition border-l ${
+                    isActive
+                      ? 'bg-[#43362E] text-[#C8B8A6] border-[#59483D] hover:text-white'
+                      : 'bg-[#FAF7F2] text-[#A89889] border-[#EADFCF] hover:text-[#C25E3E]'
+                  }`}
+                >
+                  ✕
+                </button>
               </div>
+            );
+          })}
+
+          {/* + 새 그룹 추가 버튼 */}
+          <button
+            onClick={() => setShowAddGroupModal(true)}
+            className="font-title px-3 py-1.5 rounded-xl text-xs bg-[#FAF7F2] text-[#A89889] border border-dashed border-[#D5C2AD] hover:bg-[#F3ECE0] transition whitespace-nowrap shrink-0 active:scale-95"
+          >
+            + 새 그룹
+          </button>
+        </div>
+      </div>
+
+      {/* 4. 지도 뷰 */}
+      <div className="relative w-full h-[390px] rounded-[30px] overflow-hidden shadow-[0_8px_24px_rgba(74,59,50,0.06)] border-2 border-[#EADFCF] bg-[#FAF7F2]">
+        {status === 'loading' && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#FAF7F2]/90 z-20">
+            <div className="w-8 h-8 border-3 border-[#C25E3E] border-t-transparent rounded-full animate-spin" />
+            <p className="font-body text-xs text-[#8C7A6B]">지도를 불러오고 있습니다</p>
+          </div>
+        )}
+        {status === 'error' && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#FAF7F2] z-20">
+            <p className="font-title text-red-500 mb-1">지도를 띄울 수 없습니다</p>
+            <p className="font-body text-xs text-[#8C7A6B]">{errorMessage}</p>
+          </div>
+        )}
+        <div ref={mapContainerRef} className="w-full h-full" />
+        
+        {/* 상단 좌측 범례 */}
+        <div className="font-title absolute top-3.5 left-3.5 z-10 bg-[#2D241E]/90 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md text-[11px] text-[#F3D5B5] border border-[#43362E] pointer-events-none flex items-center gap-2">
+          <span>{selectedGroup === '전체' ? '📁 전체 보기' : selectedGroup === '기본 찜' ? '🤍 기본 찜' : `📁 ${selectedGroup}`}</span>
+          {selectedGroup !== '전체' && (
+            <>
+              <span className="text-[#614F43]">|</span>
+              <span className="flex items-center gap-1">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#FAF7F2] border border-[#D5C2AD] inline-block" /> 찜
+              </span>
+              <span className="flex items-center gap-1">
+                <span
+                  className="w-2.5 h-2.5 rounded-full inline-block border"
+                  style={{ backgroundColor: activeColorConfig.fill, borderColor: activeColorConfig.stroke }}
+                />
+                다녀옴
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* 5. 장소 리스트 */}
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-between items-center px-1">
+          <h2 className="font-title text-sm text-[#2D241E]">
+            {currentRoom?.title}
+            <span className="text-xs font-normal text-[#8C7A6B] ml-1">
+              ({currentRoom?.places.filter(filterPlaces).length}곳)
+            </span>
+          </h2>
+          <span className="font-body text-xs text-[#A89889]">하트를 누르면 방문 여부가 바뀝니다</span>
+        </div>
+
+        <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1">
+          {currentRoom?.places.filter(filterPlaces).length === 0 ? (
+            <div className="font-body p-8 text-center bg-white rounded-2xl border-2 border-dashed border-[#EADFCF] text-xs text-[#8C7A6B]">
+              해당 그룹에 등록된 장소가 없습니다.
+            </div>
+          ) : (
+            (() => {
+              const renderCounts: Record<string, number> = {};
+              return currentRoom?.places
+                .filter(filterPlaces)
+                .map((place) => {
+                  const currentIdx = renderCounts[place.id] || 0;
+                  renderCounts[place.id] = currentIdx + 1;
+
+                  const isSelected = selectedPlaceId === place.id;
+                  const style = getHeartStyleForPlace(place);
+
+                  return (
+                    <div
+                      key={`place-${place.id}-${currentIdx}`}
+                      onClick={() => handleSelectOrUnselectPlace(place)}
+                      className={`p-3.5 rounded-2xl border-2 transition-all flex items-center justify-between cursor-pointer ${
+                        isSelected
+                          ? 'bg-[#2D241E] text-white border-[#2D241E] shadow-md scale-[1.01]'
+                          : 'bg-white text-[#2D241E] border-[#EADFCF] hover:border-[#D5C2AD]'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 overflow-hidden">
+                        <div className="overflow-hidden pl-1">
+                          <div className="flex items-center gap-2">
+                            <p className="font-title text-sm tracking-tight truncate">{place.name}</p>
+                            {place.group && (
+                              <span className={`font-title text-[10px] px-2 py-0.5 rounded-lg border ${
+                                isSelected ? 'bg-[#43362E] text-[#F3D5B5] border-[#59483D]' : 'bg-[#FAF7F2] text-[#7A6251] border-[#EADFCF]'
+                              }`}>
+                                {place.group}
+                              </span>
+                            )}
+                          </div>
+                          {place.address && <p className={`font-body text-xs mt-0.5 truncate max-w-[210px] ${isSelected ? 'text-[#C8B8A6]' : 'text-[#8C7A6B]'}`}>{place.address}</p>}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={() => toggleVisited(place.id, currentIdx)}
+                          title={place.isVisited ? '다녀옴 (클릭시 찜으로 전환)' : '가고싶음 (클릭시 다녀옴으로 전환)'}
+                          className="p-1 rounded-xl hover:bg-black/5 active:scale-90 transition-transform flex items-center justify-center"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="26"
+                            height="26"
+                            viewBox="0 0 24 24"
+                            fill={style.fill}
+                            stroke={style.stroke}
+                            strokeWidth={style.strokeWidth}
+                            className="drop-shadow-xs transition-all"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                            />
+                          </svg>
+                        </button>
+
+                        <button
+                          onClick={() => removePlaceItem(place.id, currentIdx)}
+                          className={`font-title text-xs px-2 py-1 rounded transition ${
+                            isSelected ? 'text-[#8C7A6B] hover:text-white' : 'text-[#A89889] hover:text-[#C25E3E]'
+                          }`}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  );
+                });
+            })()
+          )}
+        </div>
+      </div>
+
+      {/* 6. 예쁜 커스텀 알림 모달 */}
+      {alertModalMessage && (
+        <div className="fixed inset-0 z-50 bg-[#2D241E]/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-[#FAF7F2] text-[#2D241E] w-full max-w-xs rounded-[28px] p-6 shadow-2xl border-2 border-[#EADFCF] flex flex-col gap-4 text-center">
+            <span className="text-3xl mt-1">💡</span>
+            <div>
+              <p className="font-title text-sm text-[#2D241E] leading-relaxed">
+                {alertModalMessage}
+              </p>
+            </div>
+            <button
+              onClick={() => setAlertModalMessage(null)}
+              className="font-title w-full py-2.5 bg-[#2D241E] hover:bg-[#43362E] text-white text-xs rounded-xl transition active:scale-95 shadow-xs"
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 7. 그룹 삭제 모달 */}
+      {groupToDelete && (
+        <div className="fixed inset-0 z-50 bg-[#2D241E]/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-[#FAF7F2] text-[#2D241E] w-full max-w-xs rounded-[28px] p-6 shadow-2xl border-2 border-[#EADFCF] flex flex-col gap-4 text-center">
+            <span className="text-3xl mt-1">🗑️</span>
+            <div>
+              <h3 className="font-title text-base text-[#2D241E]">'{groupToDelete}' 그룹 삭제</h3>
+              <p className="font-body text-xs text-[#8C7A6B] mt-1.5 leading-relaxed">
+                그룹과 포함된 모든 장소들이 함께 삭제됩니다.<br />
+                정말 삭제하시겠습니까?
+              </p>
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => setGroupToDelete(null)}
+                className="font-title flex-1 py-2.5 bg-white border-2 border-[#EADFCF] hover:bg-[#FAF7F2] text-[#7A6251] text-xs rounded-xl transition active:scale-95"
+              >
+                취소
+              </button>
+              <button
+                onClick={confirmDeleteGroup}
+                className="font-title flex-1 py-2.5 bg-[#C25E3E] hover:bg-[#B04E30] text-white text-xs rounded-xl transition active:scale-95 shadow-xs"
+              >
+                삭제하기
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* 방 생성/참여 모달 */}
-      {showRoomModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white text-slate-900 w-full max-w-sm rounded-3xl p-5 shadow-2xl border border-slate-200 flex flex-col gap-4">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <h3 className="font-bold text-base">지도 방 관리</h3>
-              <button onClick={() => setShowRoomModal(false)} className="text-slate-400 hover:text-slate-600 text-sm font-bold">✕</button>
+      {/* 8. 새 찜 그룹 생성 모달 */}
+      {showAddGroupModal && (
+        <div className="fixed inset-0 z-50 bg-[#2D241E]/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-[#FAF7F2] text-[#2D241E] w-full max-w-xs rounded-[28px] p-6 shadow-2xl border-2 border-[#EADFCF] flex flex-col gap-4">
+            <div className="flex items-center justify-between pb-1 border-b border-[#EADFCF]">
+              <h3 className="font-title text-base">새 찜 그룹 만들기</h3>
+              <button onClick={() => setShowAddGroupModal(false)} className="font-title text-[#A89889] hover:text-[#2D241E] text-sm">✕</button>
             </div>
-            <div className="flex rounded-xl bg-slate-100 p-1 text-xs font-semibold">
-              <button onClick={() => setModalMode('create')} className={`flex-1 py-1.5 rounded-lg transition ${modalMode === 'create' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>새 방 만들기</button>
-              <button onClick={() => setModalMode('join')} className={`flex-1 py-1.5 rounded-lg transition ${modalMode === 'join' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>코드로 참여하기</button>
+            <form onSubmit={handleAddGroup} className="flex flex-col gap-3">
+              <div>
+                <label className="font-title text-xs text-[#7A6251]">그룹 이름</label>
+                <input
+                  type="text"
+                  placeholder="예: 서울, 9월 10일 약속, 홍대"
+                  value={newGroupName}
+                  onChange={(e) => setNewGroupName(e.target.value)}
+                  required
+                  autoFocus
+                  className="font-body w-full mt-1.5 px-3.5 py-2.5 text-xs bg-white border-2 border-[#EADFCF] rounded-xl focus:outline-none focus:border-[#C25E3E]"
+                />
+              </div>
+
+              <div>
+                <label className="font-title text-xs text-[#7A6251]">그룹 하트 색상</label>
+                <div className="flex gap-2 items-center mt-2">
+                  {HEART_PALETTE.map((pal) => (
+                    <button
+                      key={pal.id}
+                      type="button"
+                      onClick={() => setNewGroupColorId(pal.id)}
+                      className={`w-7 h-7 rounded-full border-2 transition-transform ${
+                        newGroupColorId === pal.id ? 'scale-120 shadow-md ring-2 ring-[#2D241E]' : 'hover:scale-110 opacity-70'
+                      }`}
+                      style={{ backgroundColor: pal.fill, borderColor: pal.stroke }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <button type="submit" className="font-title w-full py-3 bg-[#2D241E] hover:bg-[#43362E] text-white text-xs rounded-xl transition mt-2">
+                그룹 추가하기
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 9. 방 관리 모달 */}
+      {showRoomModal && (
+        <div className="fixed inset-0 z-50 bg-[#2D241E]/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-[#FAF7F2] text-[#2D241E] w-full max-w-sm rounded-[30px] p-6 shadow-2xl border-2 border-[#EADFCF] flex flex-col gap-4">
+            <div className="flex items-center justify-between pb-2 border-b border-[#EADFCF]">
+              <h3 className="font-title text-base">약속 방 관리</h3>
+              <button onClick={() => setShowRoomModal(false)} className="font-title text-[#A89889] hover:text-[#2D241E] text-sm">✕</button>
+            </div>
+            <div className="font-title flex rounded-xl bg-[#EFE9DF] p-1 text-xs">
+              <button onClick={() => setModalMode('create')} className={`flex-1 py-1.5 rounded-lg transition ${modalMode === 'create' ? 'bg-[#2D241E] text-[#F3D5B5] shadow-xs' : 'text-[#7A6251]'}`}>새 방 만들기</button>
+              <button onClick={() => setModalMode('join')} className={`flex-1 py-1.5 rounded-lg transition ${modalMode === 'join' ? 'bg-[#2D241E] text-[#F3D5B5] shadow-xs' : 'text-[#7A6251]'}`}>코드로 참여</button>
             </div>
             {modalMode === 'create' ? (
               <form onSubmit={handleCreateRoom} className="flex flex-col gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">방 이름</label>
-                  <input type="text" placeholder="예: 성수 데이트, 맛집 투어" value={newRoomTitle} onChange={(e) => setNewRoomTitle(e.target.value)} required className="w-full mt-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800" />
+                  <label className="font-title text-xs text-[#7A6251]">약속 방 이름</label>
+                  <input type="text" placeholder="예: 성수 모임, 맛집 탐방" value={newRoomTitle} onChange={(e) => setNewRoomTitle(e.target.value)} required className="font-body w-full mt-1 px-3.5 py-2.5 text-xs bg-white border-2 border-[#EADFCF] rounded-xl focus:outline-none focus:border-[#C25E3E]" />
                 </div>
-                <button type="submit" className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-xl transition mt-1">방 생성하기</button>
+                <button type="submit" className="font-title w-full py-3 bg-[#2D241E] hover:bg-[#43362E] text-white text-xs rounded-xl transition mt-1">방 생성하기</button>
               </form>
             ) : (
               <form onSubmit={handleJoinRoom} className="flex flex-col gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">6자리 초대 코드</label>
-                  <input type="text" maxLength={6} placeholder="예: A8F2K9" value={joinRoomCode} onChange={(e) => setJoinRoomCode(e.target.value.toUpperCase())} required className="w-full mt-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl font-mono uppercase tracking-widest text-center focus:outline-none focus:border-slate-800" />
+                  <label className="font-title text-xs text-[#7A6251]">6자리 초대 코드</label>
+                  <input type="text" maxLength={6} placeholder="예: A8F2K9" value={joinRoomCode} onChange={(e) => setJoinRoomCode(e.target.value.toUpperCase())} required className="font-title w-full mt-1 px-3.5 py-2.5 text-xs bg-white border-2 border-[#EADFCF] rounded-xl uppercase tracking-widest text-center focus:outline-none focus:border-[#C25E3E]" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-600">내가 부를 방 이름 (선택)</label>
-                  <input type="text" placeholder="예: 친구와의 방" value={newRoomTitle} onChange={(e) => setNewRoomTitle(e.target.value)} className="w-full mt-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-slate-800" />
+                  <label className="font-title text-xs text-[#7A6251]">내가 부를 방 이름 (선택)</label>
+                  <input type="text" placeholder="예: 친구들과의 약속" value={newRoomTitle} onChange={(e) => setNewRoomTitle(e.target.value)} className="font-body w-full mt-1 px-3.5 py-2.5 text-xs bg-white border-2 border-[#EADFCF] rounded-xl focus:outline-none focus:border-[#C25E3E]" />
                 </div>
-                <button type="submit" className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-xl transition mt-1">방 들어가기</button>
+                <button type="submit" className="font-title w-full py-3 bg-[#2D241E] hover:bg-[#43362E] text-white text-xs rounded-xl transition mt-1">방 들어가기</button>
               </form>
             )}
           </div>

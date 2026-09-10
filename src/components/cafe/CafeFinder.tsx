@@ -1,339 +1,351 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
-const DESSERT_TAGS = [
-  { label: '전체 카페', keyword: '' },
-  { label: '🥐 소금빵', keyword: '소금빵' },
-  { label: '🥞 수플레', keyword: '수플레' },
-  { label: '🍞 프렌치토스트', keyword: '프렌치토스트' },
-  { label: '🥯 베이글', keyword: '베이글' },
-  { label: '🍰 케이크', keyword: '케이크' },
-  { label: '🍪 구움과자·휘낭시에', keyword: '휘낭시에' },
-  { label: '🥐 크루아상', keyword: '크루아상' },
-  { label: '🍮 푸딩', keyword: '푸딩' },
-] as const;
+const DESSERT_TAGS = ['전체 (거리순)', '소금빵', '프렌치토스트', '수플레', '크로플', '베이글', '케이크'];
 
 export default function CafeFinder() {
-  const [baseInput, setBaseInput] = useState('성수역');
-  const [currentCoords, setCurrentCoords] = useState<{ lat: number; lng: number } | null>(null);
-  const [locationCandidates, setLocationCandidates] = useState<any[]>([]);
-  const [isSearchingLocation, setIsSearchingLocation] = useState(false);
-
-  const [selectedTag, setSelectedTag] = useState<string>('전체 카페');
-  const [selectedKeyword, setSelectedKeyword] = useState<string>('');
+  const [selectedTag, setSelectedTag] = useState<string>('전체 (거리순)');
   const [cafes, setCafes] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchSummary, setSearchSummary] = useState('');
-  const [sdkReady, setSdkReady] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [sdkReady, setSdkReady] = useState<boolean>(false);
 
-  // 1. 카카오 SDK 로드
+  // 기준 위치 상태
+  const [currentLocationName, setCurrentLocationName] = useState<string>('');
+  const [customLocationInput, setCustomLocationInput] = useState<string>('');
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+
+  // 위치 자동완성 후보 상태
+  const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+  const suggestionContainerRef = useRef<HTMLDivElement>(null);
+
+  // 1. 카카오 지도 SDK 로더
   useEffect(() => {
     const apiKey = process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY;
     if (!apiKey) return;
 
-    const readyCheck = () => {
-      if (window.kakao?.maps) {
+    const checkSdk = () => {
+      if (window.kakao?.maps?.services) {
+        setSdkReady(true);
+        return true;
+      }
+      return false;
+    };
+
+    if (checkSdk()) return;
+
+    const existingScript = document.getElementById('kakao-map-script');
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.id = 'kakao-map-script';
+      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false&libraries=services`;
+      script.async = true;
+      document.head.appendChild(script);
+      script.onload = () => {
         window.kakao.maps.load(() => {
           setSdkReady(true);
         });
+      };
+    } else {
+      const interval = setInterval(() => {
+        if (checkSdk()) clearInterval(interval);
+      }, 200);
+      return () => clearInterval(interval);
+    }
+  }, []);
+
+  // 외부 클릭 시 후보창 닫기
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        suggestionContainerRef.current &&
+        !suggestionContainerRef.current.contains(e.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // 2. 카페 검색 함수
+  const searchCafes = useCallback((targetCoords: { lat: number; lng: number }, tag: string) => {
+    if (!window.kakao?.maps?.services) return;
+    setIsLoading(true);
+
+    const ps = new window.kakao.maps.services.Places();
+    const isAll = tag === '전체 (거리순)';
+
+    const searchCallback = (data: any, status: any) => {
+      setIsLoading(false);
+      if (status === window.kakao.maps.services.Status.OK) {
+        setCafes(data || []);
+      } else {
+        setCafes([]);
       }
     };
 
-    if (window.kakao?.maps) {
-      readyCheck();
+    const searchOptions = {
+      location: new window.kakao.maps.LatLng(targetCoords.lat, targetCoords.lng),
+      radius: 1000, // 반경 1km
+      sort: window.kakao.maps.services.SortBy.DISTANCE,
+    };
+
+    if (isAll) {
+      ps.categorySearch('CE7', searchCallback, searchOptions);
+    } else {
+      ps.keywordSearch(`${tag} 카페`, searchCallback, searchOptions);
+    }
+  }, []);
+
+  // 3. 좌표나 태그 변경 시 검색
+  useEffect(() => {
+    if (sdkReady && coords) {
+      searchCafes(coords, selectedTag);
+    }
+  }, [sdkReady, coords, selectedTag, searchCafes]);
+
+  // 4. 입력 시 실시간 위치 후보 검색 (디바운스 250ms)
+  useEffect(() => {
+    if (!sdkReady || !customLocationInput.trim() || !window.kakao?.maps?.services) {
+      setLocationSuggestions([]);
       return;
     }
 
-    const scriptId = 'kakao-map-script';
-    let script = document.getElementById(scriptId) as HTMLScriptElement;
-    if (!script) {
-      script = document.createElement('script');
-      script.id = scriptId;
-      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false&libraries=services,clusterer`;
-      script.async = true;
-      document.head.appendChild(script);
-    }
-
-    script.onload = () => readyCheck();
-  }, []);
-
-  // 2. 최초 기본 위치 탐색
-  useEffect(() => {
-    if (sdkReady && !currentCoords) {
-      fetchLocationCandidates('성수역', true);
-    }
-  }, [sdkReady]);
-
-  const fetchLocationCandidates = (keyword: string, autoSelectFirst = false) => {
-    if (!window.kakao?.maps?.services) return;
-    setIsSearchingLocation(true);
-
-    const ps = new window.kakao.maps.services.Places();
-    ps.keywordSearch(keyword, (data: any, status: any) => {
-      setIsSearchingLocation(false);
-      if (status === window.kakao.maps.services.Status.OK && data.length > 0) {
-        if (autoSelectFirst) {
-          selectCandidate(data[0]);
+    const timer = setTimeout(() => {
+      const ps = new window.kakao.maps.services.Places();
+      ps.keywordSearch(customLocationInput.trim(), (data: any, status: any) => {
+        if (status === window.kakao.maps.services.Status.OK && data) {
+          setLocationSuggestions(data.slice(0, 5));
+          setShowSuggestions(true);
         } else {
-          setLocationCandidates(data.slice(0, 5));
+          setLocationSuggestions([]);
         }
-      } else {
-        alert('해당 위치를 찾을 수 없습니다.');
-        setLocationCandidates([]);
-      }
-    });
-  };
+      });
+    }, 250);
 
-  const selectCandidate = (item: any) => {
-    const coords = {
-      lat: parseFloat(item.y),
-      lng: parseFloat(item.x),
+    return () => clearTimeout(timer);
+  }, [customLocationInput, sdkReady]);
+
+  // 5. 후보 중 하나를 클릭해 위치 선택했을 때
+  const handleSelectSuggestion = (place: any) => {
+    const newCoords = {
+      lat: parseFloat(place.y),
+      lng: parseFloat(place.x),
     };
-    setBaseInput(item.place_name);
-    setCurrentCoords(coords);
-    setSearchSummary(item.place_name);
-    setLocationCandidates([]);
-    searchCafesByKeyword(coords, selectedKeyword);
+    setCoords(newCoords);
+    setCurrentLocationName(place.place_name);
+    setCustomLocationInput('');
+    setShowSuggestions(false);
+    searchCafes(newCoords, selectedTag);
   };
 
-  const handleCurrentLocation = () => {
+  // 6. 엔터/버튼으로 직접 검색 시 첫 번째 후보 자동 적용
+  const handleCustomLocationSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (locationSuggestions.length > 0) {
+      handleSelectSuggestion(locationSuggestions[0]);
+    } else if (customLocationInput.trim() && window.kakao?.maps?.services) {
+      setIsLoading(true);
+      const ps = new window.kakao.maps.services.Places();
+      ps.keywordSearch(customLocationInput, (data: any, status: any) => {
+        setIsLoading(false);
+        if (status === window.kakao.maps.services.Status.OK && data[0]) {
+          handleSelectSuggestion(data[0]);
+        } else {
+          alert('입력하신 위치를 찾을 수 없습니다.');
+        }
+      });
+    }
+  };
+
+  // 7. 내 현재 위치 가져오기
+  const handleFetchCurrentLocation = () => {
     if (!navigator.geolocation) {
-      alert('위치 정보(GPS)를 지원하지 않는 브라우저입니다.');
+      alert('브라우저에서 위치 정보를 지원하지 않습니다.');
       return;
     }
 
     setIsLoading(true);
+    setShowSuggestions(false);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const coords = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
+      (pos) => {
+        const newCoords = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
         };
-        setBaseInput('📍 내 현재 위치');
-        setCurrentCoords(coords);
-        setSearchSummary('내 현재 위치');
-        setLocationCandidates([]);
-        searchCafesByKeyword(coords, selectedKeyword);
+        setCoords(newCoords);
+        setCurrentLocationName('내 현재 위치');
+        searchCafes(newCoords, selectedTag);
       },
       () => {
         setIsLoading(false);
-        alert('위치 권한을 허용해 주세요.');
+        alert('위치 권한이 거부되었거나 신호를 찾을 수 없습니다. 아래 검색창을 이용해 주세요!');
       },
-      { timeout: 10000 }
+      { timeout: 7000 }
     );
   };
 
-  // 반경 1km 거리순 카페 탐색
-  const searchCafesByKeyword = (coords: { lat: number; lng: number }, dessertKeyword: string) => {
-    if (!window.kakao?.maps?.services) return;
-
-    setIsLoading(true);
-    const ps = new window.kakao.maps.services.Places();
-    const locationLatLng = new window.kakao.maps.LatLng(coords.lat, coords.lng);
-
-    if (!dessertKeyword) {
-      ps.categorySearch(
-        'CE7',
-        (data: any, status: any) => {
-          setIsLoading(false);
-          if (status === window.kakao.maps.services.Status.OK) {
-            setCafes(data);
-          } else {
-            setCafes([]);
-          }
-        },
-        {
-          location: locationLatLng,
-          radius: 1000,
-          sort: window.kakao.maps.services.SortBy.DISTANCE,
-        }
-      );
-    } else {
-      ps.keywordSearch(
-        dessertKeyword,
-        (data: any, status: any) => {
-          setIsLoading(false);
-          if (status === window.kakao.maps.services.Status.OK) {
-            const cafeOnly = data.filter((item: any) =>
-              item.category_group_code === 'CE7' ||
-              item.category_name?.includes('카페') ||
-              item.category_name?.includes('제과') ||
-              item.category_name?.includes('베이커리')
-            );
-            setCafes(cafeOnly.length > 0 ? cafeOnly : data);
-          } else {
-            setCafes([]);
-          }
-        },
-        {
-          location: locationLatLng,
-          radius: 1000,
-          sort: window.kakao.maps.services.SortBy.DISTANCE,
-        }
-      );
-    }
-  };
-
-  const handleTagChange = (tagLabel: string, keyword: string) => {
-    setSelectedTag(tagLabel);
-    setSelectedKeyword(keyword);
-    if (!currentCoords) {
-      fetchLocationCandidates(baseInput, true);
-      return;
-    }
-    searchCafesByKeyword(currentCoords, keyword);
-  };
-
   return (
-    <div className="flex flex-col gap-4">
-      {/* 1. 기준 위치 입력 & GPS */}
-      <div className="flex flex-col gap-2 relative">
-        <div className="flex gap-1.5">
+    <div className="flex flex-col gap-4 text-[#2D241E]">
+      
+      {/* 1. 기준 위치 컨트롤 바 및 후보 드롭다운 */}
+      <div 
+        ref={suggestionContainerRef}
+        className="relative bg-white p-4 rounded-[26px] border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] flex flex-col gap-3 z-30"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5 overflow-hidden">
+            <span className="font-title text-[10px] text-[#A86F3D] bg-[#FBF5ED] px-2 py-0.5 rounded-md border border-[#EFE4D6]">
+              기준 위치
+            </span>
+            <span className="font-title text-xs text-[#2D241E] truncate max-w-[170px]">
+              {currentLocationName ? `📍 ${currentLocationName}` : '위치를 설정해주세요'}
+            </span>
+          </div>
           <button
-            type="button"
-            onClick={handleCurrentLocation}
-            title="내 현재 위치 불러오기"
-            className="px-3 py-2.5 bg-white border border-slate-300 hover:border-slate-800 text-slate-700 text-xs font-bold rounded-xl transition flex items-center gap-1 shrink-0 shadow-sm"
+            onClick={handleFetchCurrentLocation}
+            className="font-title text-xs px-3.5 py-1.5 bg-[#FAF7F2] hover:bg-[#F3ECE0] border border-[#EADFCF] rounded-xl text-[#7A6251] transition active:scale-95 shrink-0 flex items-center gap-1"
           >
-            <span>📍 현위치</span>
+            <span>🎯</span> 내 위치
+          </button>
+        </div>
+
+        {/* 위치 검색 인풋 */}
+        <form onSubmit={handleCustomLocationSubmit} className="relative flex gap-2">
+          <input
+            type="text"
+            placeholder="동네나 지하철역 검색 (예: 성수역, 연남동)"
+            value={customLocationInput}
+            onFocus={() => {
+              if (locationSuggestions.length > 0) setShowSuggestions(true);
+            }}
+            onChange={(e) => setCustomLocationInput(e.target.value)}
+            className="font-body flex-1 px-3.5 py-2.5 text-xs bg-[#FAF7F2] rounded-xl border border-[#EADFCF] text-[#2D241E] focus:outline-none focus:border-[#A86F3D]"
+          />
+          <button
+            type="submit"
+            className="font-title px-4 py-2.5 bg-[#2D241E] hover:bg-[#43362E] text-white text-xs rounded-xl transition shrink-0 active:scale-95"
+          >
+            선택
           </button>
 
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              fetchLocationCandidates(baseInput);
-            }}
-            className="flex-1 flex gap-1.5"
+          {/* 실시간 위치 후보 드롭다운 */}
+          {showSuggestions && locationSuggestions.length > 0 && (
+            <div className="absolute top-12 left-0 right-16 bg-white border-2 border-[#EADFCF] rounded-2xl shadow-xl overflow-hidden z-50 flex flex-col divide-y divide-[#F2EAE0]">
+              {locationSuggestions.map((place) => (
+                <button
+                  key={place.id}
+                  type="button"
+                  onClick={() => handleSelectSuggestion(place)}
+                  className="px-3.5 py-2.5 text-left hover:bg-[#FAF7F2] transition flex flex-col gap-0.5 active:bg-[#F6EFE6]"
+                >
+                  <span className="font-title text-xs text-[#2D241E] truncate">
+                    📍 {place.place_name}
+                  </span>
+                  <span className="font-body text-[10px] text-[#8C7A6B] truncate">
+                    {place.road_address_name || place.address_name}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </form>
+      </div>
+
+      {/* 2. 카테고리 칩 */}
+      <div className="flex gap-2 items-center overflow-x-auto pb-1 no-scrollbar">
+        {DESSERT_TAGS.map((tag) => (
+          <button
+            key={tag}
+            onClick={() => setSelectedTag(tag)}
+            className={`font-title px-4 py-2 rounded-2xl text-xs transition whitespace-nowrap active:scale-95 ${
+              selectedTag === tag
+                ? 'bg-[#2D241E] text-[#F3D5B5] shadow-xs'
+                : 'bg-white text-[#7A6251] border-2 border-[#EADFCF] hover:bg-[#FAF7F2]'
+            }`}
           >
-            <input
-              type="text"
-              placeholder="동네, 지하철역, 장소 검색 (예: 연남동, 강남역)"
-              value={baseInput}
-              onChange={(e) => setBaseInput(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-sm bg-white rounded-xl border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-800 shadow-sm"
-            />
-            <button
-              type="submit"
-              disabled={isSearchingLocation || !sdkReady}
-              className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold rounded-xl transition shadow-sm shrink-0"
-            >
-              {isSearchingLocation ? '검색중' : '검색'}
-            </button>
-          </form>
-        </div>
-
-        {/* 연관 장소 후보 드롭다운 */}
-        {locationCandidates.length > 0 && (
-          <div className="absolute top-12 left-0 right-0 z-30 bg-white rounded-2xl border border-slate-200 shadow-xl p-2 flex flex-col gap-1">
-            <span className="text-[11px] font-bold text-slate-400 px-2 py-1">
-              정확한 기준 위치를 선택해 주세요
-            </span>
-            {locationCandidates.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => selectCandidate(item)}
-                className="p-2.5 hover:bg-slate-50 rounded-xl cursor-pointer transition flex items-center justify-between"
-              >
-                <div className="overflow-hidden pr-2 text-left">
-                  <p className="text-sm font-bold text-slate-900 truncate">{item.place_name}</p>
-                  <p className="text-xs text-slate-400 truncate mt-0.5">
-                    {item.road_address_name || item.address_name}
-                  </p>
-                </div>
-                <span className="text-xs font-semibold text-slate-400 shrink-0">선택 →</span>
-              </div>
-            ))}
-          </div>
-        )}
+            {tag}
+          </button>
+        ))}
       </div>
 
-      {/* 2. 디저트별 태그 필터 */}
-      <div className="flex flex-col gap-1.5">
-        <span className="text-xs font-bold text-slate-500 px-1">디저트별 근처 카페 탐색</span>
-        <div className="flex gap-1.5 overflow-x-auto pb-1">
-          {DESSERT_TAGS.map((tag) => (
-            <button
-              key={tag.label}
-              onClick={() => handleTagChange(tag.label, tag.keyword)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition shadow-sm ${
-                selectedTag === tag.label
-                  ? 'bg-amber-600 text-white shadow-amber-200'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
-              }`}
-            >
-              {tag.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 3. 검색 결과 리스트 */}
+      {/* 3. 카페 리스트 및 상태 표시 */}
       <div className="flex flex-col gap-2.5">
         <div className="flex justify-between items-center px-1">
-          <div className="flex items-center gap-1.5">
-            <h2 className="text-sm font-bold text-slate-800">
-              {searchSummary ? `${searchSummary} 근처` : '근처 카페'} ({cafes.length}곳)
-            </h2>
-            <span className="text-[11px] text-amber-700 bg-amber-100 px-2 py-0.5 rounded font-semibold">
-              가까운 순
-            </span>
-          </div>
-          <span className="text-xs text-slate-400">{selectedTag}</span>
+          <span className="font-title text-xs text-[#7A6251]">
+            반경 1km 거리순 {coords ? `(${cafes.length}곳)` : ''}
+          </span>
+          <span className="font-body text-xs text-[#A89889]">
+            선택: {selectedTag}
+          </span>
         </div>
 
-        <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto pr-1">
-          {isLoading ? (
-            <div className="p-10 text-center flex flex-col items-center justify-center gap-2">
-              <div className="w-6 h-6 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" />
-              <p className="text-xs text-slate-500 font-medium">
-                {selectedTag} 매장 찾는 중...
-              </p>
-            </div>
-          ) : cafes.length === 0 ? (
-            <div className="p-10 text-center bg-white rounded-2xl border border-dashed border-slate-200 text-xs text-slate-400 flex flex-col gap-1">
-              <p className="font-semibold text-slate-600">근처에 해당 디저트 매장이 없습니다.</p>
-              <p>기준 위치를 바꾸거나 다른 디저트를 선택해 보세요.</p>
-            </div>
-          ) : (
-            cafes.map((cafe) => (
-              <div
-                key={cafe.id}
-                className="p-3.5 bg-white rounded-2xl border border-slate-200 flex items-center justify-between shadow-xs hover:border-slate-300 transition"
-              >
-                <div className="overflow-hidden pr-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-slate-900 truncate">
-                      {cafe.place_name}
+        {/* 위치 미설정 상태 */}
+        {!coords && !isLoading && (
+          <div className="font-body p-12 text-center bg-white rounded-3xl border-2 border-dashed border-[#EADFCF] text-xs text-[#8C7A6B] flex flex-col items-center gap-2">
+            <span className="text-3xl">📍</span>
+            <p className="font-title text-sm text-[#2D241E] mt-1">기준 위치가 설정되지 않았습니다</p>
+            <p className="leading-relaxed">
+              상단의 <b>[내 위치]</b> 버튼을 누르거나<br />
+              원하는 동네를 입력해 후보를 선택해 보세요!
+            </p>
+          </div>
+        )}
+
+        {/* 로딩 상태 */}
+        {isLoading && (
+          <div className="py-16 text-center flex flex-col items-center justify-center gap-2">
+            <div className="w-8 h-8 border-3 border-[#A86F3D] border-t-transparent rounded-full animate-spin" />
+            <p className="font-body text-xs text-[#8C7A6B]">반경 1km 이내 카페를 찾고 있습니다...</p>
+          </div>
+        )}
+
+        {/* 검색 결과 없음 */}
+        {coords && !isLoading && cafes.length === 0 && (
+          <div className="font-body p-8 text-center bg-white rounded-2xl border-2 border-dashed border-[#EADFCF] text-xs text-[#8C7A6B]">
+            반경 1km 이내에 해당하는 카페가 없습니다.<br />
+            다른 디저트를 누르거나 기준 위치를 변경해 보세요!
+          </div>
+        )}
+
+        {/* 카페 리스트 카드 */}
+        {coords && !isLoading && cafes.length > 0 && (
+          cafes.map((cafe) => (
+            <div
+              key={cafe.id}
+              className="p-4 bg-white rounded-[24px] border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between"
+            >
+              <div className="text-left overflow-hidden pr-2">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-title text-sm text-[#2D241E] truncate">{cafe.place_name}</h3>
+                  {cafe.distance && (
+                    <span className="font-title text-[10px] text-[#A86F3D] bg-[#FBF5ED] px-2 py-0.5 rounded-md border border-[#EFE4D6] shrink-0">
+                      {cafe.distance}m
                     </span>
-                    {cafe.distance && (
-                      <span className="text-xs text-amber-600 font-bold shrink-0">
-                        {cafe.distance}m
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-slate-400 truncate mt-0.5">
-                    {cafe.road_address_name || cafe.address_name}
-                  </p>
-                  {cafe.phone && (
-                    <p className="text-[11px] text-slate-400 mt-0.5">{cafe.phone}</p>
                   )}
                 </div>
-
-                {/* 상세보기 버튼: 카카오맵 상세 정보 페이지 새 탭 오픈 */}
-                <a
-                  href={cafe.place_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-1.5 text-xs font-bold rounded-xl shrink-0 transition bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 flex items-center gap-1"
-                >
-                  <span>상세보기</span>
-                  <span className="text-[10px]">↗</span>
-                </a>
+                <p className="font-body text-xs text-[#8C7A6B] mt-0.5 truncate">
+                  {cafe.road_address_name || cafe.address_name}
+                </p>
+                {cafe.phone && (
+                  <p className="font-body text-[11px] text-[#A89889] mt-0.5">📞 {cafe.phone}</p>
+                )}
               </div>
-            ))
-          )}
-        </div>
+
+              <a
+                href={cafe.place_url || `https://place.map.kakao.com/${cafe.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-title text-xs px-3.5 py-2.5 bg-[#FAF7F2] text-[#2D241E] border-2 border-[#EADFCF] hover:border-[#A86F3D] hover:bg-white rounded-xl transition-all shrink-0 active:scale-95 flex items-center gap-1"
+              >
+                <span>상세보기</span>
+                <span className="text-[10px] text-[#A86F3D]">↗</span>
+              </a>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
