@@ -66,7 +66,7 @@ export default function HomePage() {
             <h1 className="font-title text-4xl tracking-tight text-[#2D241E] flex items-center gap-1.5 mt-1">
               ROUTY<span className="text-[#C25E3E]">!</span>
             </h1>
-            <p className="font-body text-xs font-normal text-[#8C7A6B] mt-1 leading-relaxed">
+            <p className="font-body text-xs font-normal text-[#8C7A6B] mt-1.5 leading-relaxed">
               취향 고민은 AI가, 만남은 편하게! 직관적인 약속 코스 플래너
             </p>
           </div>
@@ -101,25 +101,25 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* 2. 약속 찜 지도 */}
+          {/* 2. 약속 찜 지도 (🤎 딥 베이지 테마) */}
           <Link
             href="/map"
-            className="group relative p-4.5 rounded-[24px] bg-white border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between active:scale-[0.99]"
+            className="group relative p-4.5 rounded-[24px] bg-[#EFE6D8] border-2 border-[#DFCBB5] shadow-[0_4px_16px_rgba(74,59,50,0.06)] hover:border-[#CFB69C] hover:bg-[#E8DDCD] transition-all flex items-center justify-between active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
-              <span className="w-11 h-11 rounded-2xl bg-[#F7F2EB] border border-[#E8DEC7] flex items-center justify-center text-xl shrink-0">
+              <span className="w-11 h-11 rounded-2xl bg-white border border-[#DFCBB5] flex items-center justify-center text-xl shrink-0 shadow-2xs">
                 🗺️
               </span>
               <div className="text-left">
                 <h3 className="font-title text-base text-[#2D241E] group-hover:text-[#C25E3E] transition-colors">
                   약속 찜 지도
                 </h3>
-                <p className="font-body text-xs text-[#8C7A6B] mt-0.5">
+                <p className="font-body text-xs text-[#6D5441] mt-0.5">
                   가고 싶은 곳을 찜하고 공유해보세요!
                 </p>
               </div>
             </div>
-            <span className="font-title text-xs text-[#8C7A6B] group-hover:text-[#C25E3E] group-hover:translate-x-1 transition-all pl-2">
+            <span className="font-title text-xs text-[#523F30] group-hover:text-[#C25E3E] group-hover:translate-x-1 transition-all pl-2 font-bold">
               GO →
             </span>
           </Link>
@@ -135,10 +135,10 @@ export default function HomePage() {
               </span>
               <div className="text-left">
                 <h3 className="font-title text-base text-[#2D241E] group-hover:text-[#C25E3E] transition-colors">
-                  맛집 어디가지?
+                  밥집 어디가지?
                 </h3>
                 <p className="font-body text-xs text-[#8C7A6B] mt-0.5">
-                  거리별, 음식 종류별로 맛집을 찾아드려요!
+                  거리별, 음식 종류별로 밥집을 찾아드려요!
                 </p>
               </div>
             </div>
@@ -147,7 +147,7 @@ export default function HomePage() {
             </span>
           </Link>
 
-          {/* 4. 카페 어디가지? (문구 변경 반영) */}
+          {/* 4. 카페 어디가지? */}
           <Link
             href="/cafe"
             className="group relative p-4.5 rounded-[24px] bg-white border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between active:scale-[0.99]"

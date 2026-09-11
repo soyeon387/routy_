@@ -1,3 +1,5 @@
+// src/lib/authMock.ts
+
 export interface User {
   username: string;
   password: string;
@@ -7,7 +9,7 @@ export interface User {
 const STORAGE_USERS_KEY = 'routy_users_db';
 const STORAGE_SESSION_KEY = 'routy_session_user';
 
-// 테스트 시연용 기본 계정 (admin / 1234, routy / 1234)
+// 테스트 시연용 기본 계정 (admin, routy, user)
 const DEFAULT_USERS: Record<string, User> = {
   admin: {
     username: 'admin',
@@ -19,9 +21,14 @@ const DEFAULT_USERS: Record<string, User> = {
     password: '1234',
     createdAt: Date.now(),
   },
+  user: {
+    username: 'user',
+    password: '1234',
+    createdAt: Date.now(),
+  },
 };
 
-// 1. 전체 유저 목록 가져오기 (회원가입 데이터는 새로고침해도 유지되도록 localStorage 사용)
+// 1. 전체 유저 목록 가져오기
 export function getUsers(): Record<string, User> {
   if (typeof window === 'undefined') return DEFAULT_USERS;
 
@@ -32,7 +39,10 @@ export function getUsers(): Record<string, User> {
   }
 
   try {
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    // 기존에 저장된 데이터가 있어도 기본 계정(user 등)이 누락되지 않도록 보장
+    const merged = { ...DEFAULT_USERS, ...parsed };
+    return merged;
   } catch {
     return DEFAULT_USERS;
   }
@@ -66,7 +76,7 @@ export function registerUser(username: string, password: string): { success: boo
   return { success: true, message: '회원가입이 완료되었습니다!' };
 }
 
-// 4. 로그인 (브라우저 탭을 닫으면 세션이 풀리도록 sessionStorage 사용)
+// 4. 로그인
 export function loginUser(username: string, password: string): { success: boolean; message: string } {
   const trimmed = username.trim();
   const users = getUsers();

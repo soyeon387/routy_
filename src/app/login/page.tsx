@@ -53,42 +53,86 @@ export default function LoginPage() {
     router.push('/');
   };
 
+  // 3. 심사용 원터치 빠른 로그인 (routy, admin, user)
+  const handleQuickLogin = (targetUser: 'routy' | 'admin' | 'user') => {
+    setError('');
+    setSuccessMsg('');
+    const res = loginUser(targetUser, '1234');
+    if (res.success) {
+      router.push('/');
+    } else {
+      setError(res.message);
+    }
+  };
+
   return (
-    <main className="max-w-md mx-auto min-h-screen px-5 pt-8 pb-12 flex flex-col justify-between bg-[#FAF7F2] text-[#2D241E]">
+    <main className="max-w-md mx-auto min-h-screen px-5 pt-8 pb-10 flex flex-col justify-between bg-[#FAF7F2] text-[#2D241E]">
       <div className="flex flex-col gap-5">
-        {/* 상단 헤더 */}
-        <header className="flex items-center justify-center pb-3 border-b border-[#EADFCF]">
-          <span className="font-title text-xs text-[#A89889] bg-[#F7F2EB] px-3 py-1 rounded-full border border-[#EADFCF]">
+        {/* 상단 브랜딩 태그 */}
+        <header className="flex items-center justify-between pb-3 border-b border-[#EADFCF]">
+          <span className="font-title text-[11px] text-[#7A6251] bg-[#F4EDE2] px-3 py-1 rounded-full border border-[#E3D7C5]">
             ROUTY ACCOUNT
+          </span>
+          <span className="font-body text-[11px] text-[#A89889]">
+            데이트 & 약속 플래너
           </span>
         </header>
 
-        {/* 타이틀 안내 */}
-        <div className="text-center pt-1">
-          <div className="w-14 h-14 rounded-2xl bg-[#F8EFE4] border-2 border-[#E6D4BE] flex items-center justify-center text-2xl mx-auto mb-3 shadow-inner">
-            {mode === 'login' ? '🔑' : '✨'}
-          </div>
-          <h1 className="font-title text-2xl tracking-tight text-[#2D241E]">
-            {mode === 'login' ? 'Routy 로그인' : '초간편 회원가입'}
+        {/* 타이틀 영역 */}
+        <div className="pt-2 text-center flex flex-col items-center">
+          <span className="font-title text-3xl tracking-tight text-[#2D241E] flex items-center gap-0.5">
+            ROUTY<span className="text-[#C25E3E]">.</span>
+          </span>
+          <h1 className="font-title text-xl tracking-tight text-[#2D241E] mt-1">
+            {mode === 'login' ? '루티에 오신 것을 환영해요!' : '새로운 약속 시작하기'}
           </h1>
-          <p className="font-body text-xs text-[#8C7A6B] mt-1.5">
+          <p className="font-body text-xs text-[#8C7A6B] mt-1.5 leading-relaxed">
             {mode === 'login'
-              ? '아이디와 비밀번호로 간편하게 로그인하세요'
-              : '개인정보 필요 없이 아이디와 비밀번호만 입력하면 끝!'}
+              ? '아이디와 비밀번호로 간편하게 접속하세요'
+              : '개인정보 입력 없이 아이디만으로 바로 가입할 수 있어요'}
           </p>
-
-          {/* 💡 심사위원/테스터용 테스트 계정 안내 텍스트 */}
-          {mode === 'login' && (
-            <div className="mt-3.5 inline-block bg-[#F8EFE4]/80 border border-[#EADFCF] rounded-xl px-3.5 py-2">
-              <p className="font-body text-[11px] text-[#7A6251]">
-                 해커톤용 계정: <b className="text-[#2D241E]">routy</b> 또는 <b className="text-[#2D241E]">admin</b> <span className="text-[#C25E3E] font-bold">/ 1234</span>
-              </p>
-            </div>
-          )}
         </div>
 
+        {/* ⚡ 심사위원 & 테스터용 원터치 빠른 로그인 칩 영역 (3개 분할) */}
+        {mode === 'login' && (
+          <div className="bg-[#F5EDE1] border border-[#E5D7C4] rounded-2xl p-3.5 flex flex-col gap-2 shadow-2xs">
+            <div className="flex items-center justify-between px-0.5">
+              <span className="font-title text-[11px] text-[#7A6251] flex items-center gap-1">
+                <span>⚡</span> 원터치 테스트 로그인
+              </span>
+              <span className="font-body text-[10px] text-[#A89889]">PW: 1234</span>
+            </div>
+            <div className="grid grid-cols-3 gap-1.5">
+              <button
+                type="button"
+                onClick={() => handleQuickLogin('routy')}
+                className="font-title py-2 px-1 bg-white hover:bg-[#FAF7F2] border border-[#DFCBB5] text-[#2D241E] text-[11px] rounded-xl shadow-2xs transition active:scale-95 flex items-center justify-center gap-1"
+              >
+                <span></span>
+                <span>routy</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin('admin')}
+                className="font-title py-2 px-1 bg-white hover:bg-[#FAF7F2] border border-[#DFCBB5] text-[#2D241E] text-[11px] rounded-xl shadow-2xs transition active:scale-95 flex items-center justify-center gap-1"
+              >
+                <span></span>
+                <span>admin</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin('user')}
+                className="font-title py-2 px-1 bg-white hover:bg-[#FAF7F2] border border-[#DFCBB5] text-[#2D241E] text-[11px] rounded-xl shadow-2xs transition active:scale-95 flex items-center justify-center gap-1"
+              >
+                <span></span>
+                <span>user</span>
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* 탭 전환 버튼 */}
-        <div className="font-title flex rounded-2xl bg-[#EFE9DF] p-1 text-xs border border-[#E3D9CC]">
+        <div className="font-title flex rounded-2xl bg-[#EFE8DC] p-1 text-xs border border-[#E2D5C3]">
           <button
             type="button"
             onClick={() => {
@@ -167,12 +211,12 @@ export default function LoginPage() {
 
             {/* 에러 및 성공 메시지 */}
             {error && (
-              <p className="font-body text-xs text-[#C25E3E] bg-[#F9ECE7] border border-[#F2D1C5] px-3.5 py-2 rounded-xl text-center">
+              <p className="font-body text-xs text-[#C25E3E] bg-[#F9ECE7] border border-[#F2D1C5] px-3.5 py-2.5 rounded-xl text-center">
                 ⚠️ {error}
               </p>
             )}
             {successMsg && (
-              <p className="font-body text-xs text-[#5B8C51] bg-[#F1F7EE] border border-[#D5E8CE] px-3.5 py-2 rounded-xl text-center">
+              <p className="font-body text-xs text-[#5B8C51] bg-[#F1F7EE] border border-[#D5E8CE] px-3.5 py-2.5 rounded-xl text-center">
                 {successMsg}
               </p>
             )}

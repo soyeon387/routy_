@@ -14,7 +14,7 @@ export default function RestaurantPage() {
             ← 홈으로
           </Link>
           <h1 className="font-title text-lg tracking-tight text-[#2D241E] flex items-center gap-1.5">
-            맛집 어디가지? <span className="text-[#C25E3E]">🍽️</span>
+            밥집 어디가지? <span className="text-[#C25E3E]">🍽️</span>
           </h1>
         </div>
         <Link

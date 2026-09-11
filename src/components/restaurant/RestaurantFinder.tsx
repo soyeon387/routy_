@@ -3,7 +3,32 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-const FOOD_TAGS = ['전체 (거리순)', '한식', '일식', '중식', '양식', '고기/구이', '아시안'];
+// 요청하신 분류 순서 및 태그 구성
+const FOOD_TAGS = [
+  '전체 (거리순)',
+  '한식',
+  '분식',
+  '일식',
+  '중식',
+  '양식',
+  '고기 구이',
+  '족발/보쌈',
+  '아시안',
+  '주점',
+];
+
+// 카카오 로컬 검색 엔진 최적화 매핑 (단일/명확한 키워드로 교집합 검색 실패 방지)
+const SEARCH_KEYWORD_MAP: Record<string, string> = {
+  '한식': '한식',
+  '분식': '분식',
+  '일식': '일식',
+  '중식': '중식',
+  '양식': '양식',
+  '고기 구이': '고기집',
+  '족발/보쌈': '족발 보쌈',
+  '아시안': '아시안',
+  '주점': '술집', // 💡 여러 단어 나열 대신 카카오 DB에서 가장 넒은 범위를 커버하는 '술집'으로 매핑
+};
 
 export default function RestaurantFinder() {
   const searchParams = useSearchParams();
@@ -14,6 +39,7 @@ export default function RestaurantFinder() {
   );
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [sdkReady, setSdkReady] = useState<boolean>(false);
 
   const [currentLocationName, setCurrentLocationName] = useState<string>('');
@@ -23,6 +49,11 @@ export default function RestaurantFinder() {
   const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   const suggestionContainerRef = useRef<HTMLDivElement>(null);
+
+  // 무한 스크롤 및 카카오 pagination 참조
+  const paginationRef = useRef<any>(null);
+  const observerTargetRef = useRef<HTMLDivElement>(null);
+  const [hasNextPage, setHasNextPage] = useState<boolean>(false);
 
   useEffect(() => {
     const apiKey = process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY;
@@ -71,34 +102,98 @@ export default function RestaurantFinder() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // 고기 구이 선택 시 족발/보쌈 집 제외 필터링 함수
+  const filterResultsByTag = (list: any[], tag: string) => {
+    if (tag === '고기 구이') {
+      return list.filter((item) => {
+        const name = item.place_name || '';
+        const cat = item.category_name || '';
+        const hasJokbalOrBossam =
+          name.includes('족발') ||
+          name.includes('보쌈') ||
+          cat.includes('족발') ||
+          cat.includes('보쌈');
+        return !hasJokbalOrBossam;
+      });
+    }
+    return list;
+  };
+
   const searchRestaurants = useCallback((targetCoords: { lat: number; lng: number }, tag: string) => {
     if (!window.kakao?.maps?.services) return;
     setIsLoading(true);
+    setRestaurants([]);
+    paginationRef.current = null;
+    setHasNextPage(false);
 
     const ps = new window.kakao.maps.services.Places();
     const isAll = tag === '전체 (거리순)';
 
-    const searchCallback = (data: any, status: any) => {
+    const searchCallback = (data: any, status: any, pagination: any) => {
       setIsLoading(false);
+      setIsLoadingMore(false);
+
       if (status === window.kakao.maps.services.Status.OK) {
-        setRestaurants(data || []);
+        const filteredData = filterResultsByTag(data || [], tag);
+
+        if (pagination.current === 1) {
+          setRestaurants(filteredData);
+        } else {
+          setRestaurants((prev) => [...prev, ...filteredData]);
+        }
+        paginationRef.current = pagination;
+        setHasNextPage(Boolean(pagination.hasNextPage));
       } else {
-        setRestaurants([]);
+        if (!paginationRef.current || paginationRef.current.current === 1) {
+          setRestaurants([]);
+          setHasNextPage(false);
+        }
       }
     };
 
-    const searchOptions = {
+    // 음식점 카테고리(FD6) 내에서만 검색되도록 설정하여 엉뚱한 상점/학원 등 매칭 방지
+    const searchOptions: any = {
       location: new window.kakao.maps.LatLng(targetCoords.lat, targetCoords.lng),
       radius: 1000,
       sort: window.kakao.maps.services.SortBy.DISTANCE,
+      category_group_code: 'FD6',
     };
 
     if (isAll) {
-      ps.categorySearch('FD6', searchCallback, searchOptions);
+      ps.categorySearch('FD6', searchCallback, {
+        location: searchOptions.location,
+        radius: searchOptions.radius,
+        sort: searchOptions.sort,
+      });
     } else {
-      ps.keywordSearch(`${tag} 맛집`, searchCallback, searchOptions);
+      const searchKeyword = SEARCH_KEYWORD_MAP[tag] || tag;
+      ps.keywordSearch(searchKeyword, searchCallback, searchOptions);
     }
   }, []);
+
+  // 스크롤 감지 무한 로드 (Intersection Observer)
+  useEffect(() => {
+    const target = observerTargetRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (
+          entries[0].isIntersecting &&
+          paginationRef.current?.hasNextPage &&
+          !isLoading &&
+          !isLoadingMore
+        ) {
+          setIsLoadingMore(true);
+          paginationRef.current.nextPage();
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [isLoading, isLoadingMore, hasNextPage]);
 
   useEffect(() => {
     if (sdkReady && coords) {
@@ -185,6 +280,7 @@ export default function RestaurantFinder() {
 
   return (
     <div className="flex flex-col gap-4 text-[#2D241E]">
+      {/* 기준 위치 설정 박스 */}
       <div 
         ref={suggestionContainerRef}
         className="relative bg-white p-4 rounded-[26px] border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] flex flex-col gap-3 z-30"
@@ -246,6 +342,7 @@ export default function RestaurantFinder() {
         </form>
       </div>
 
+      {/* 음식 카테고리 태그 탭 */}
       <div className="flex gap-2 items-center overflow-x-auto pb-1 no-scrollbar">
         {FOOD_TAGS.map((tag) => (
           <button
@@ -262,10 +359,11 @@ export default function RestaurantFinder() {
         ))}
       </div>
 
+      {/* 맛집 리스트 영역 */}
       <div className="flex flex-col gap-2.5">
         <div className="flex justify-between items-center px-1">
           <span className="font-title text-xs text-[#7A6251]">
-            반경 1km 맛집 {coords ? `(${restaurants.length}곳)` : ''}
+            반경 1km 맛집
           </span>
           <span className="font-body text-xs text-[#A89889]">
             선택: {selectedTag}
@@ -292,45 +390,57 @@ export default function RestaurantFinder() {
 
         {coords && !isLoading && restaurants.length === 0 && (
           <div className="font-body p-8 text-center bg-white rounded-2xl border-2 border-dashed border-[#EADFCF] text-xs text-[#8C7A6B]">
-            반경 1km 이내에 해당하는 맛집이 없습니다.<br />
+            반경 1km 이내에 해당하는 장소가 없습니다.<br />
             다른 카테고리를 누르거나 기준 위치를 변경해 보세요!
           </div>
         )}
 
         {coords && !isLoading && restaurants.length > 0 && (
-          restaurants.map((res) => (
-            <div
-              key={res.id}
-              className="p-4 bg-white rounded-[24px] border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between"
-            >
-              <div className="text-left overflow-hidden pr-2">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-title text-sm text-[#2D241E] truncate">{res.place_name}</h3>
-                  {res.distance && (
-                    <span className="font-title text-[10px] text-[#C25E3E] bg-[#F9ECE7] px-2 py-0.5 rounded-md border border-[#F2D1C5] shrink-0">
-                      {res.distance}m
-                    </span>
+          <>
+            {restaurants.map((res, index) => (
+              <div
+                key={`${res.id}-${index}`}
+                className="p-4 bg-white rounded-[24px] border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between"
+              >
+                <div className="text-left overflow-hidden pr-2">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-title text-sm text-[#2D241E] truncate">{res.place_name}</h3>
+                    {res.distance && (
+                      <span className="font-title text-[10px] text-[#C25E3E] bg-[#F9ECE7] px-2 py-0.5 rounded-md border border-[#F2D1C5] shrink-0">
+                        {res.distance}m
+                      </span>
+                    )}
+                  </div>
+                  <p className="font-body text-xs text-[#8C7A6B] mt-0.5 truncate">
+                    {res.road_address_name || res.address_name}
+                  </p>
+                  {res.phone && (
+                    <p className="font-body text-[11px] text-[#A89889] mt-0.5">📞 {res.phone}</p>
                   )}
                 </div>
-                <p className="font-body text-xs text-[#8C7A6B] mt-0.5 truncate">
-                  {res.road_address_name || res.address_name}
-                </p>
-                {res.phone && (
-                  <p className="font-body text-[11px] text-[#A89889] mt-0.5">📞 {res.phone}</p>
-                )}
-              </div>
 
-              <a
-                href={res.place_url || `https://place.map.kakao.com/${res.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-title text-xs px-3.5 py-2.5 bg-[#FAF7F2] text-[#2D241E] border-2 border-[#EADFCF] hover:border-[#C25E3E] hover:bg-white rounded-xl transition-all shrink-0 active:scale-95 flex items-center gap-1"
-              >
-                <span>상세보기</span>
-                <span className="text-[10px] text-[#C25E3E]">↗</span>
-              </a>
+                <a
+                  href={res.place_url || `https://place.map.kakao.com/${res.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-title text-xs px-3.5 py-2.5 bg-[#FAF7F2] text-[#2D241E] border-2 border-[#EADFCF] hover:border-[#C25E3E] hover:bg-white rounded-xl transition-all shrink-0 active:scale-95 flex items-center gap-1"
+                >
+                  <span>상세보기</span>
+                  <span className="text-[10px] text-[#C25E3E]">↗</span>
+                </a>
+              </div>
+            ))}
+
+            {/* 스크롤 시 다음 페이지 로드 감지 트리거 */}
+            <div ref={observerTargetRef} className="py-4 text-center">
+              {isLoadingMore && (
+                <div className="flex items-center justify-center gap-2 text-xs text-[#8C7A6B]">
+                  <div className="w-4 h-4 border-2 border-[#C25E3E] border-t-transparent rounded-full animate-spin" />
+                  <span>더 많은 맛집 불러오는 중...</span>
+                </div>
+              )}
             </div>
-          ))
+          </>
         )}
       </div>
     </div>

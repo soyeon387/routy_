@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-// 크로플 제외, 구움과자 및 에그타르트 추가
 const DESSERT_TAGS = ['전체 (거리순)', '소금빵', '에그타르트', '구움과자', '프렌치토스트', '수플레', '베이글', '케이크'];
 
 export default function CafeFinder() {
   const [selectedTag, setSelectedTag] = useState<string>('전체 (거리순)');
   const [cafes, setCafes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [sdkReady, setSdkReady] = useState<boolean>(false);
 
   // 기준 위치 상태
@@ -20,6 +20,11 @@ export default function CafeFinder() {
   const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   const suggestionContainerRef = useRef<HTMLDivElement>(null);
+
+  // 무한 스크롤 및 카카오 pagination 참조
+  const paginationRef = useRef<any>(null);
+  const observerTargetRef = useRef<HTMLDivElement>(null);
+  const [hasNextPage, setHasNextPage] = useState<boolean>(false);
 
   // 1. 카카오 지도 SDK 로더
   useEffect(() => {
@@ -70,26 +75,40 @@ export default function CafeFinder() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // 2. 카페 검색 함수
+  // 2. 카페 검색 함수 (pagination 지원)
   const searchCafes = useCallback((targetCoords: { lat: number; lng: number }, tag: string) => {
     if (!window.kakao?.maps?.services) return;
     setIsLoading(true);
+    setCafes([]);
+    paginationRef.current = null;
+    setHasNextPage(false);
 
     const ps = new window.kakao.maps.services.Places();
     const isAll = tag === '전체 (거리순)';
 
-    const searchCallback = (data: any, status: any) => {
+    const searchCallback = (data: any, status: any, pagination: any) => {
       setIsLoading(false);
+      setIsLoadingMore(false);
+
       if (status === window.kakao.maps.services.Status.OK) {
-        setCafes(data || []);
+        if (pagination.current === 1) {
+          setCafes(data || []);
+        } else {
+          setCafes((prev) => [...prev, ...(data || [])]);
+        }
+        paginationRef.current = pagination;
+        setHasNextPage(Boolean(pagination.hasNextPage));
       } else {
-        setCafes([]);
+        if (!paginationRef.current || paginationRef.current.current === 1) {
+          setCafes([]);
+          setHasNextPage(false);
+        }
       }
     };
 
     const searchOptions = {
       location: new window.kakao.maps.LatLng(targetCoords.lat, targetCoords.lng),
-      radius: 1000, // 반경 1km
+      radius: 1000,
       sort: window.kakao.maps.services.SortBy.DISTANCE,
     };
 
@@ -100,14 +119,38 @@ export default function CafeFinder() {
     }
   }, []);
 
-  // 3. 좌표나 태그 변경 시 검색
+  // 3. 스크롤 감지 무한 로드 (Intersection Observer)
+  useEffect(() => {
+    const target = observerTargetRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (
+          entries[0].isIntersecting &&
+          paginationRef.current?.hasNextPage &&
+          !isLoading &&
+          !isLoadingMore
+        ) {
+          setIsLoadingMore(true);
+          paginationRef.current.nextPage();
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [isLoading, isLoadingMore, hasNextPage]);
+
+  // 4. 좌표나 태그 변경 시 검색
   useEffect(() => {
     if (sdkReady && coords) {
       searchCafes(coords, selectedTag);
     }
   }, [sdkReady, coords, selectedTag, searchCafes]);
 
-  // 4. 입력 시 실시간 위치 후보 검색 (디바운스 250ms)
+  // 5. 실시간 위치 후보 검색 (디바운스 250ms)
   useEffect(() => {
     if (!sdkReady || !customLocationInput.trim() || !window.kakao?.maps?.services) {
       setLocationSuggestions([]);
@@ -129,7 +172,6 @@ export default function CafeFinder() {
     return () => clearTimeout(timer);
   }, [customLocationInput, sdkReady]);
 
-  // 5. 후보 중 하나를 클릭해 위치 선택했을 때
   const handleSelectSuggestion = (place: any) => {
     const newCoords = {
       lat: parseFloat(place.y),
@@ -142,7 +184,6 @@ export default function CafeFinder() {
     searchCafes(newCoords, selectedTag);
   };
 
-  // 6. 직접 검색 시
   const handleCustomLocationSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (locationSuggestions.length > 0) {
@@ -161,7 +202,6 @@ export default function CafeFinder() {
     }
   };
 
-  // 7. 내 현재 위치 가져오기
   const handleFetchCurrentLocation = () => {
     if (!navigator.geolocation) {
       alert('브라우저에서 위치 정보를 지원하지 않습니다.');
@@ -190,7 +230,6 @@ export default function CafeFinder() {
 
   return (
     <div className="flex flex-col gap-4 text-[#2D241E]">
-      {/* 1. 기준 위치 컨트롤 바 및 후보 드롭다운 */}
       <div 
         ref={suggestionContainerRef}
         className="relative bg-white p-4 rounded-[26px] border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] flex flex-col gap-3 z-30"
@@ -212,7 +251,6 @@ export default function CafeFinder() {
           </button>
         </div>
 
-        {/* 위치 검색 인풋 */}
         <form onSubmit={handleCustomLocationSubmit} className="relative flex gap-2">
           <input
             type="text"
@@ -231,7 +269,6 @@ export default function CafeFinder() {
             선택
           </button>
 
-          {/* 실시간 위치 후보 드롭다운 */}
           {showSuggestions && locationSuggestions.length > 0 && (
             <div className="absolute top-12 left-0 right-16 bg-white border-2 border-[#EADFCF] rounded-2xl shadow-xl overflow-hidden z-50 flex flex-col divide-y divide-[#F2EAE0]">
               {locationSuggestions.map((place) => (
@@ -254,7 +291,6 @@ export default function CafeFinder() {
         </form>
       </div>
 
-      {/* 2. 카테고리 칩 (구움과자, 에그타르트 반영) */}
       <div className="flex gap-2 items-center overflow-x-auto pb-1 no-scrollbar">
         {DESSERT_TAGS.map((tag) => (
           <button
@@ -271,18 +307,16 @@ export default function CafeFinder() {
         ))}
       </div>
 
-      {/* 3. 카페 리스트 및 상태 표시 */}
       <div className="flex flex-col gap-2.5">
         <div className="flex justify-between items-center px-1">
           <span className="font-title text-xs text-[#7A6251]">
-            반경 1km 거리순 {coords ? `(${cafes.length}곳)` : ''}
+            반경 1km 거리순
           </span>
           <span className="font-body text-xs text-[#A89889]">
             선택: {selectedTag}
           </span>
         </div>
 
-        {/* 위치 미설정 상태 */}
         {!coords && !isLoading && (
           <div className="font-body p-12 text-center bg-white rounded-3xl border-2 border-dashed border-[#EADFCF] text-xs text-[#8C7A6B] flex flex-col items-center gap-2">
             <span className="text-3xl">📍</span>
@@ -294,7 +328,6 @@ export default function CafeFinder() {
           </div>
         )}
 
-        {/* 로딩 상태 */}
         {isLoading && (
           <div className="py-16 text-center flex flex-col items-center justify-center gap-2">
             <div className="w-8 h-8 border-3 border-[#A86F3D] border-t-transparent rounded-full animate-spin" />
@@ -302,7 +335,6 @@ export default function CafeFinder() {
           </div>
         )}
 
-        {/* 검색 결과 없음 */}
         {coords && !isLoading && cafes.length === 0 && (
           <div className="font-body p-8 text-center bg-white rounded-2xl border-2 border-dashed border-[#EADFCF] text-xs text-[#8C7A6B]">
             반경 1km 이내에 해당하는 카페가 없습니다.<br />
@@ -310,41 +342,52 @@ export default function CafeFinder() {
           </div>
         )}
 
-        {/* 카페 리스트 카드 */}
         {coords && !isLoading && cafes.length > 0 && (
-          cafes.map((cafe) => (
-            <div
-              key={cafe.id}
-              className="p-4 bg-white rounded-[24px] border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between"
-            >
-              <div className="text-left overflow-hidden pr-2">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-title text-sm text-[#2D241E] truncate">{cafe.place_name}</h3>
-                  {cafe.distance && (
-                    <span className="font-title text-[10px] text-[#A86F3D] bg-[#FBF5ED] px-2 py-0.5 rounded-md border border-[#EFE4D6] shrink-0">
-                      {cafe.distance}m
-                    </span>
+          <>
+            {cafes.map((cafe, index) => (
+              <div
+                key={`${cafe.id}-${index}`}
+                className="p-4 bg-white rounded-[24px] border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between"
+              >
+                <div className="text-left overflow-hidden pr-2">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-title text-sm text-[#2D241E] truncate">{cafe.place_name}</h3>
+                    {cafe.distance && (
+                      <span className="font-title text-[10px] text-[#A86F3D] bg-[#FBF5ED] px-2 py-0.5 rounded-md border border-[#EFE4D6] shrink-0">
+                        {cafe.distance}m
+                      </span>
+                    )}
+                  </div>
+                  <p className="font-body text-xs text-[#8C7A6B] mt-0.5 truncate">
+                    {cafe.road_address_name || cafe.address_name}
+                  </p>
+                  {cafe.phone && (
+                    <p className="font-body text-[11px] text-[#A89889] mt-0.5">📞 {cafe.phone}</p>
                   )}
                 </div>
-                <p className="font-body text-xs text-[#8C7A6B] mt-0.5 truncate">
-                  {cafe.road_address_name || cafe.address_name}
-                </p>
-                {cafe.phone && (
-                  <p className="font-body text-[11px] text-[#A89889] mt-0.5">📞 {cafe.phone}</p>
-                )}
-              </div>
 
-              <a
-                href={cafe.place_url || `https://place.map.kakao.com/${cafe.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-title text-xs px-3.5 py-2.5 bg-[#FAF7F2] text-[#2D241E] border-2 border-[#EADFCF] hover:border-[#A86F3D] hover:bg-white rounded-xl transition-all shrink-0 active:scale-95 flex items-center gap-1"
-              >
-                <span>상세보기</span>
-                <span className="text-[10px] text-[#A86F3D]">↗</span>
-              </a>
+                <a
+                  href={cafe.place_url || `https://place.map.kakao.com/${cafe.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-title text-xs px-3.5 py-2.5 bg-[#FAF7F2] text-[#2D241E] border-2 border-[#EADFCF] hover:border-[#A86F3D] hover:bg-white rounded-xl transition-all shrink-0 active:scale-95 flex items-center gap-1"
+                >
+                  <span>상세보기</span>
+                  <span className="text-[10px] text-[#A86F3D]">↗</span>
+                </a>
+              </div>
+            ))}
+
+            {/* 스크롤 감지 및 추가 로딩 영역 */}
+            <div ref={observerTargetRef} className="py-4 text-center">
+              {isLoadingMore && (
+                <div className="flex items-center justify-center gap-2 text-xs text-[#8C7A6B]">
+                  <div className="w-4 h-4 border-2 border-[#A86F3D] border-t-transparent rounded-full animate-spin" />
+                  <span>더 많은 카페 불러오는 중...</span>
+                </div>
+              )}
             </div>
-          ))
+          </>
         )}
       </div>
     </div>

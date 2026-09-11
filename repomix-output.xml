@@ -92,6 +92,26 @@ tsconfig.json
 <files>
 This section contains the contents of the repository's files.
 
+<file path="public/file.svg">
+<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
+</file>
+
+<file path="public/globe.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g clip-path="url(#a)"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.83-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.92 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.58q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.67 3.44q-.65-1.27-.98-3.1" fill="#666"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs></svg>
+</file>
+
+<file path="public/next.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
+</file>
+
+<file path="public/vercel.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
+</file>
+
+<file path="public/window.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
+</file>
+
 <file path="src/app/login/page.tsx">
 'use client';
 
@@ -148,42 +168,86 @@ export default function LoginPage() {
     router.push('/');
   };
 
+  // 3. 심사용 원터치 빠른 로그인 (routy, admin, user)
+  const handleQuickLogin = (targetUser: 'routy' | 'admin' | 'user') => {
+    setError('');
+    setSuccessMsg('');
+    const res = loginUser(targetUser, '1234');
+    if (res.success) {
+      router.push('/');
+    } else {
+      setError(res.message);
+    }
+  };
+
   return (
-    <main className="max-w-md mx-auto min-h-screen px-5 pt-8 pb-12 flex flex-col justify-between bg-[#FAF7F2] text-[#2D241E]">
+    <main className="max-w-md mx-auto min-h-screen px-5 pt-8 pb-10 flex flex-col justify-between bg-[#FAF7F2] text-[#2D241E]">
       <div className="flex flex-col gap-5">
-        {/* 상단 헤더 */}
-        <header className="flex items-center justify-center pb-3 border-b border-[#EADFCF]">
-          <span className="font-title text-xs text-[#A89889] bg-[#F7F2EB] px-3 py-1 rounded-full border border-[#EADFCF]">
+        {/* 상단 브랜딩 태그 */}
+        <header className="flex items-center justify-between pb-3 border-b border-[#EADFCF]">
+          <span className="font-title text-[11px] text-[#7A6251] bg-[#F4EDE2] px-3 py-1 rounded-full border border-[#E3D7C5]">
             ROUTY ACCOUNT
+          </span>
+          <span className="font-body text-[11px] text-[#A89889]">
+            데이트 & 약속 플래너
           </span>
         </header>
 
-        {/* 타이틀 안내 */}
-        <div className="text-center pt-1">
-          <div className="w-14 h-14 rounded-2xl bg-[#F8EFE4] border-2 border-[#E6D4BE] flex items-center justify-center text-2xl mx-auto mb-3 shadow-inner">
-            {mode === 'login' ? '🔑' : '✨'}
-          </div>
-          <h1 className="font-title text-2xl tracking-tight text-[#2D241E]">
-            {mode === 'login' ? 'Routy 로그인' : '초간편 회원가입'}
+        {/* 타이틀 영역 */}
+        <div className="pt-2 text-center flex flex-col items-center">
+          <span className="font-title text-3xl tracking-tight text-[#2D241E] flex items-center gap-0.5">
+            ROUTY<span className="text-[#C25E3E]">.</span>
+          </span>
+          <h1 className="font-title text-xl tracking-tight text-[#2D241E] mt-1">
+            {mode === 'login' ? '루티에 오신 것을 환영해요!' : '새로운 약속 시작하기'}
           </h1>
-          <p className="font-body text-xs text-[#8C7A6B] mt-1.5">
+          <p className="font-body text-xs text-[#8C7A6B] mt-1.5 leading-relaxed">
             {mode === 'login'
-              ? '아이디와 비밀번호로 간편하게 로그인하세요'
-              : '개인정보 필요 없이 아이디와 비밀번호만 입력하면 끝!'}
+              ? '아이디와 비밀번호로 간편하게 접속하세요'
+              : '개인정보 입력 없이 아이디만으로 바로 가입할 수 있어요'}
           </p>
-
-          {/* 💡 심사위원/테스터용 테스트 계정 안내 텍스트 */}
-          {mode === 'login' && (
-            <div className="mt-3.5 inline-block bg-[#F8EFE4]/80 border border-[#EADFCF] rounded-xl px-3.5 py-2">
-              <p className="font-body text-[11px] text-[#7A6251]">
-                 해커톤용 계정: <b className="text-[#2D241E]">routy</b> 또는 <b className="text-[#2D241E]">admin</b> <span className="text-[#C25E3E] font-bold">/ 1234</span>
-              </p>
-            </div>
-          )}
         </div>
 
+        {/* ⚡ 심사위원 & 테스터용 원터치 빠른 로그인 칩 영역 (3개 분할) */}
+        {mode === 'login' && (
+          <div className="bg-[#F5EDE1] border border-[#E5D7C4] rounded-2xl p-3.5 flex flex-col gap-2 shadow-2xs">
+            <div className="flex items-center justify-between px-0.5">
+              <span className="font-title text-[11px] text-[#7A6251] flex items-center gap-1">
+                <span>⚡</span> 원터치 테스트 로그인
+              </span>
+              <span className="font-body text-[10px] text-[#A89889]">PW: 1234</span>
+            </div>
+            <div className="grid grid-cols-3 gap-1.5">
+              <button
+                type="button"
+                onClick={() => handleQuickLogin('routy')}
+                className="font-title py-2 px-1 bg-white hover:bg-[#FAF7F2] border border-[#DFCBB5] text-[#2D241E] text-[11px] rounded-xl shadow-2xs transition active:scale-95 flex items-center justify-center gap-1"
+              >
+                <span></span>
+                <span>routy</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin('admin')}
+                className="font-title py-2 px-1 bg-white hover:bg-[#FAF7F2] border border-[#DFCBB5] text-[#2D241E] text-[11px] rounded-xl shadow-2xs transition active:scale-95 flex items-center justify-center gap-1"
+              >
+                <span></span>
+                <span>admin</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin('user')}
+                className="font-title py-2 px-1 bg-white hover:bg-[#FAF7F2] border border-[#DFCBB5] text-[#2D241E] text-[11px] rounded-xl shadow-2xs transition active:scale-95 flex items-center justify-center gap-1"
+              >
+                <span></span>
+                <span>user</span>
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* 탭 전환 버튼 */}
-        <div className="font-title flex rounded-2xl bg-[#EFE9DF] p-1 text-xs border border-[#E3D9CC]">
+        <div className="font-title flex rounded-2xl bg-[#EFE8DC] p-1 text-xs border border-[#E2D5C3]">
           <button
             type="button"
             onClick={() => {
@@ -262,12 +326,12 @@ export default function LoginPage() {
 
             {/* 에러 및 성공 메시지 */}
             {error && (
-              <p className="font-body text-xs text-[#C25E3E] bg-[#F9ECE7] border border-[#F2D1C5] px-3.5 py-2 rounded-xl text-center">
+              <p className="font-body text-xs text-[#C25E3E] bg-[#F9ECE7] border border-[#F2D1C5] px-3.5 py-2.5 rounded-xl text-center">
                 ⚠️ {error}
               </p>
             )}
             {successMsg && (
-              <p className="font-body text-xs text-[#5B8C51] bg-[#F1F7EE] border border-[#D5E8CE] px-3.5 py-2 rounded-xl text-center">
+              <p className="font-body text-xs text-[#5B8C51] bg-[#F1F7EE] border border-[#D5E8CE] px-3.5 py-2.5 rounded-xl text-center">
                 {successMsg}
               </p>
             )}
@@ -309,7 +373,7 @@ export default function RestaurantPage() {
             ← 홈으로
           </Link>
           <h1 className="font-title text-lg tracking-tight text-[#2D241E] flex items-center gap-1.5">
-            맛집 어디가지? <span className="text-[#C25E3E]">🍽️</span>
+            밥집 어디가지? <span className="text-[#C25E3E]">🍽️</span>
           </h1>
         </div>
         <Link
@@ -334,7 +398,32 @@ export default function RestaurantPage() {
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-const FOOD_TAGS = ['전체 (거리순)', '한식', '일식', '중식', '양식', '고기/구이', '아시안'];
+// 요청하신 분류 순서 및 태그 구성
+const FOOD_TAGS = [
+  '전체 (거리순)',
+  '한식',
+  '분식',
+  '일식',
+  '중식',
+  '양식',
+  '고기 구이',
+  '족발/보쌈',
+  '아시안',
+  '주점',
+];
+
+// 카카오 로컬 검색 엔진 최적화 매핑 (단일/명확한 키워드로 교집합 검색 실패 방지)
+const SEARCH_KEYWORD_MAP: Record<string, string> = {
+  '한식': '한식',
+  '분식': '분식',
+  '일식': '일식',
+  '중식': '중식',
+  '양식': '양식',
+  '고기 구이': '고기집',
+  '족발/보쌈': '족발 보쌈',
+  '아시안': '아시안',
+  '주점': '술집', // 💡 여러 단어 나열 대신 카카오 DB에서 가장 넒은 범위를 커버하는 '술집'으로 매핑
+};
 
 export default function RestaurantFinder() {
   const searchParams = useSearchParams();
@@ -345,6 +434,7 @@ export default function RestaurantFinder() {
   );
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [sdkReady, setSdkReady] = useState<boolean>(false);
 
   const [currentLocationName, setCurrentLocationName] = useState<string>('');
@@ -354,6 +444,11 @@ export default function RestaurantFinder() {
   const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   const suggestionContainerRef = useRef<HTMLDivElement>(null);
+
+  // 무한 스크롤 및 카카오 pagination 참조
+  const paginationRef = useRef<any>(null);
+  const observerTargetRef = useRef<HTMLDivElement>(null);
+  const [hasNextPage, setHasNextPage] = useState<boolean>(false);
 
   useEffect(() => {
     const apiKey = process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY;
@@ -402,34 +497,98 @@ export default function RestaurantFinder() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // 고기 구이 선택 시 족발/보쌈 집 제외 필터링 함수
+  const filterResultsByTag = (list: any[], tag: string) => {
+    if (tag === '고기 구이') {
+      return list.filter((item) => {
+        const name = item.place_name || '';
+        const cat = item.category_name || '';
+        const hasJokbalOrBossam =
+          name.includes('족발') ||
+          name.includes('보쌈') ||
+          cat.includes('족발') ||
+          cat.includes('보쌈');
+        return !hasJokbalOrBossam;
+      });
+    }
+    return list;
+  };
+
   const searchRestaurants = useCallback((targetCoords: { lat: number; lng: number }, tag: string) => {
     if (!window.kakao?.maps?.services) return;
     setIsLoading(true);
+    setRestaurants([]);
+    paginationRef.current = null;
+    setHasNextPage(false);
 
     const ps = new window.kakao.maps.services.Places();
     const isAll = tag === '전체 (거리순)';
 
-    const searchCallback = (data: any, status: any) => {
+    const searchCallback = (data: any, status: any, pagination: any) => {
       setIsLoading(false);
+      setIsLoadingMore(false);
+
       if (status === window.kakao.maps.services.Status.OK) {
-        setRestaurants(data || []);
+        const filteredData = filterResultsByTag(data || [], tag);
+
+        if (pagination.current === 1) {
+          setRestaurants(filteredData);
+        } else {
+          setRestaurants((prev) => [...prev, ...filteredData]);
+        }
+        paginationRef.current = pagination;
+        setHasNextPage(Boolean(pagination.hasNextPage));
       } else {
-        setRestaurants([]);
+        if (!paginationRef.current || paginationRef.current.current === 1) {
+          setRestaurants([]);
+          setHasNextPage(false);
+        }
       }
     };
 
-    const searchOptions = {
+    // 음식점 카테고리(FD6) 내에서만 검색되도록 설정하여 엉뚱한 상점/학원 등 매칭 방지
+    const searchOptions: any = {
       location: new window.kakao.maps.LatLng(targetCoords.lat, targetCoords.lng),
       radius: 1000,
       sort: window.kakao.maps.services.SortBy.DISTANCE,
+      category_group_code: 'FD6',
     };
 
     if (isAll) {
-      ps.categorySearch('FD6', searchCallback, searchOptions);
+      ps.categorySearch('FD6', searchCallback, {
+        location: searchOptions.location,
+        radius: searchOptions.radius,
+        sort: searchOptions.sort,
+      });
     } else {
-      ps.keywordSearch(`${tag} 맛집`, searchCallback, searchOptions);
+      const searchKeyword = SEARCH_KEYWORD_MAP[tag] || tag;
+      ps.keywordSearch(searchKeyword, searchCallback, searchOptions);
     }
   }, []);
+
+  // 스크롤 감지 무한 로드 (Intersection Observer)
+  useEffect(() => {
+    const target = observerTargetRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (
+          entries[0].isIntersecting &&
+          paginationRef.current?.hasNextPage &&
+          !isLoading &&
+          !isLoadingMore
+        ) {
+          setIsLoadingMore(true);
+          paginationRef.current.nextPage();
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [isLoading, isLoadingMore, hasNextPage]);
 
   useEffect(() => {
     if (sdkReady && coords) {
@@ -516,6 +675,7 @@ export default function RestaurantFinder() {
 
   return (
     <div className="flex flex-col gap-4 text-[#2D241E]">
+      {/* 기준 위치 설정 박스 */}
       <div 
         ref={suggestionContainerRef}
         className="relative bg-white p-4 rounded-[26px] border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] flex flex-col gap-3 z-30"
@@ -577,6 +737,7 @@ export default function RestaurantFinder() {
         </form>
       </div>
 
+      {/* 음식 카테고리 태그 탭 */}
       <div className="flex gap-2 items-center overflow-x-auto pb-1 no-scrollbar">
         {FOOD_TAGS.map((tag) => (
           <button
@@ -593,10 +754,11 @@ export default function RestaurantFinder() {
         ))}
       </div>
 
+      {/* 맛집 리스트 영역 */}
       <div className="flex flex-col gap-2.5">
         <div className="flex justify-between items-center px-1">
           <span className="font-title text-xs text-[#7A6251]">
-            반경 1km 맛집 {coords ? `(${restaurants.length}곳)` : ''}
+            반경 1km 맛집
           </span>
           <span className="font-body text-xs text-[#A89889]">
             선택: {selectedTag}
@@ -623,45 +785,57 @@ export default function RestaurantFinder() {
 
         {coords && !isLoading && restaurants.length === 0 && (
           <div className="font-body p-8 text-center bg-white rounded-2xl border-2 border-dashed border-[#EADFCF] text-xs text-[#8C7A6B]">
-            반경 1km 이내에 해당하는 맛집이 없습니다.<br />
+            반경 1km 이내에 해당하는 장소가 없습니다.<br />
             다른 카테고리를 누르거나 기준 위치를 변경해 보세요!
           </div>
         )}
 
         {coords && !isLoading && restaurants.length > 0 && (
-          restaurants.map((res) => (
-            <div
-              key={res.id}
-              className="p-4 bg-white rounded-[24px] border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between"
-            >
-              <div className="text-left overflow-hidden pr-2">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-title text-sm text-[#2D241E] truncate">{res.place_name}</h3>
-                  {res.distance && (
-                    <span className="font-title text-[10px] text-[#C25E3E] bg-[#F9ECE7] px-2 py-0.5 rounded-md border border-[#F2D1C5] shrink-0">
-                      {res.distance}m
-                    </span>
+          <>
+            {restaurants.map((res, index) => (
+              <div
+                key={`${res.id}-${index}`}
+                className="p-4 bg-white rounded-[24px] border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between"
+              >
+                <div className="text-left overflow-hidden pr-2">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-title text-sm text-[#2D241E] truncate">{res.place_name}</h3>
+                    {res.distance && (
+                      <span className="font-title text-[10px] text-[#C25E3E] bg-[#F9ECE7] px-2 py-0.5 rounded-md border border-[#F2D1C5] shrink-0">
+                        {res.distance}m
+                      </span>
+                    )}
+                  </div>
+                  <p className="font-body text-xs text-[#8C7A6B] mt-0.5 truncate">
+                    {res.road_address_name || res.address_name}
+                  </p>
+                  {res.phone && (
+                    <p className="font-body text-[11px] text-[#A89889] mt-0.5">📞 {res.phone}</p>
                   )}
                 </div>
-                <p className="font-body text-xs text-[#8C7A6B] mt-0.5 truncate">
-                  {res.road_address_name || res.address_name}
-                </p>
-                {res.phone && (
-                  <p className="font-body text-[11px] text-[#A89889] mt-0.5">📞 {res.phone}</p>
-                )}
-              </div>
 
-              <a
-                href={res.place_url || `https://place.map.kakao.com/${res.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-title text-xs px-3.5 py-2.5 bg-[#FAF7F2] text-[#2D241E] border-2 border-[#EADFCF] hover:border-[#C25E3E] hover:bg-white rounded-xl transition-all shrink-0 active:scale-95 flex items-center gap-1"
-              >
-                <span>상세보기</span>
-                <span className="text-[10px] text-[#C25E3E]">↗</span>
-              </a>
+                <a
+                  href={res.place_url || `https://place.map.kakao.com/${res.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-title text-xs px-3.5 py-2.5 bg-[#FAF7F2] text-[#2D241E] border-2 border-[#EADFCF] hover:border-[#C25E3E] hover:bg-white rounded-xl transition-all shrink-0 active:scale-95 flex items-center gap-1"
+                >
+                  <span>상세보기</span>
+                  <span className="text-[10px] text-[#C25E3E]">↗</span>
+                </a>
+              </div>
+            ))}
+
+            {/* 스크롤 시 다음 페이지 로드 감지 트리거 */}
+            <div ref={observerTargetRef} className="py-4 text-center">
+              {isLoadingMore && (
+                <div className="flex items-center justify-center gap-2 text-xs text-[#8C7A6B]">
+                  <div className="w-4 h-4 border-2 border-[#C25E3E] border-t-transparent rounded-full animate-spin" />
+                  <span>더 많은 맛집 불러오는 중...</span>
+                </div>
+              )}
             </div>
-          ))
+          </>
         )}
       </div>
     </div>
@@ -670,6 +844,8 @@ export default function RestaurantFinder() {
 </file>
 
 <file path="src/lib/authMock.ts">
+// src/lib/authMock.ts
+
 export interface User {
   username: string;
   password: string;
@@ -679,7 +855,7 @@ export interface User {
 const STORAGE_USERS_KEY = 'routy_users_db';
 const STORAGE_SESSION_KEY = 'routy_session_user';
 
-// 테스트 시연용 기본 계정 (admin / 1234, routy / 1234)
+// 테스트 시연용 기본 계정 (admin, routy, user)
 const DEFAULT_USERS: Record<string, User> = {
   admin: {
     username: 'admin',
@@ -691,9 +867,14 @@ const DEFAULT_USERS: Record<string, User> = {
     password: '1234',
     createdAt: Date.now(),
   },
+  user: {
+    username: 'user',
+    password: '1234',
+    createdAt: Date.now(),
+  },
 };
 
-// 1. 전체 유저 목록 가져오기 (회원가입 데이터는 새로고침해도 유지되도록 localStorage 사용)
+// 1. 전체 유저 목록 가져오기
 export function getUsers(): Record<string, User> {
   if (typeof window === 'undefined') return DEFAULT_USERS;
 
@@ -704,7 +885,10 @@ export function getUsers(): Record<string, User> {
   }
 
   try {
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    // 기존에 저장된 데이터가 있어도 기본 계정(user 등)이 누락되지 않도록 보장
+    const merged = { ...DEFAULT_USERS, ...parsed };
+    return merged;
   } catch {
     return DEFAULT_USERS;
   }
@@ -738,7 +922,7 @@ export function registerUser(username: string, password: string): { success: boo
   return { success: true, message: '회원가입이 완료되었습니다!' };
 }
 
-// 4. 로그인 (브라우저 탭을 닫으면 세션이 풀리도록 sessionStorage 사용)
+// 4. 로그인
 export function loginUser(username: string, password: string): { success: boolean; message: string } {
   const trimmed = username.trim();
   const users = getUsers();
@@ -767,174 +951,6 @@ export function logoutUser(): void {
 }
 </file>
 
-<file path="public/file.svg">
-<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
-</file>
-
-<file path="public/globe.svg">
-<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g clip-path="url(#a)"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.83-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.92 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.58q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.67 3.44q-.65-1.27-.98-3.1" fill="#666"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs></svg>
-</file>
-
-<file path="public/next.svg">
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
-</file>
-
-<file path="public/vercel.svg">
-<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
-</file>
-
-<file path="public/window.svg">
-<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
-</file>
-
-<file path="src/app/api/food-recommend/route.ts">
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { NextResponse } from 'next/server';
-
-const apiKey = process.env.GEMINI_API_KEY || '';
-const genAI = new GoogleGenerativeAI(apiKey);
-
-export async function POST(req: Request) {
-  try {
-    const { history, step } = await req.json();
-
-    if (!apiKey) {
-      return NextResponse.json({ error: 'GEMINI_API_KEY 없음' }, { status: 500 });
-    }
-
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
-      generationConfig: {
-        responseMimeType: 'application/json',
-      },
-    });
-
-    // 첫 번째 질문 제외 4번의 질문 진행 -> 총 5단계(Step 0~4) 선택 완료 시 최종 결과(step >= 5)
-    const isFinal = step >= 5;
-
-    if (!isFinal) {
-      const prompt = `
-사용자가 음식 메뉴를 추천받기 위해 지금까지 선택한 취향 목록입니다:
-${history.map((h: string, idx: number) => `- ${idx === 0 ? '기본 베이스' : `${idx}단계 취향`}: ${h}`).join('\n')}
-
-[규칙]
-1. 절대로 '제육덮밥', '칼국수', '삼겹살' 같은 구체적인 특정 음식 메뉴명을 선택지(optionA, optionB)로 제시하지 마세요.
-2. 대신 사용자의 미각, 감각, 식사 스타일 취향을 묻는 밸런스 질문을 1개 만드세요.
-   - 예시: 
-     - 맵기: "🔥 스트레스 풀리는 매콤함" vs "🤍 속 편안하고 담백한 맛"
-     - 국물/식감: "🍲 깊고 진한 뜨끈한 국물" vs "🥢 꾸덕하고 쫄깃하게 비벼먹는 스타일"
-     - 온도/무게감: "🧊 입맛 돋우는 시원하고 산뜻함" vs "♨️ 이열치열 든든하고 묵직한 포만감"
-     - 기름기/느낌: "🧈 풍미 가득 기름진 고소함" vs "🥗 깔끔하고 개운한 뒷맛"
-     - 식사 무드: "🏮 로컬 감성의 찐한 한 상" vs "✨ 정갈하고 세련된 플레이팅"
-3. 앞서 나온 선택들과 중복되지 않는 새로운 축의 취향 질문을 던져주세요.
-4. 앞서 나온 선택을 통해 유추할 수 있는 음식 취향 질문을 던져주세요. (가지치기 느낌)
-   - 예시 :
-     - 국물 취향을 골랐다면 국물 음식 취향에서 가지치기를 하여 취향 질문을 던져주세요.
-     - 맵지 않은 것이 좋다는 취향을 골랐다면 맵지 않은 음식들과 관련된 취향 질문을 던져주세요.
-
-반드시 다음 JSON 형식으로만 응답하세요:
-{
-  "isFinal": false,
-  "question": "센스 있는 취향 질문 문장",
-  "optionA": "선택지 A (이모지 포함)",
-  "optionB": "선택지 B (이모지 포함)"
-}
-`;
-      const result = await model.generateContent(prompt);
-      return NextResponse.json(JSON.parse(result.response.text()));
-    } else {
-      const prompt = `
-사용자가 다음 5가지 취향 선택을 통해 음식을 골랐습니다:
-${history.map((h: string, idx: number) => `- ${idx === 0 ? '기본 베이스' : `${idx}단계 취향`}: ${h}`).join('\n')}
-
-위 5가지 취향 조건(베이스 + 4가지 세부 취향)을 모두 충족하는 가장 매력적이고 구체적인 음식 메뉴 이름 1개를 추천해주세요.
-설명이나 수식어는 필요 없으며 메뉴명만 단답으로 지정하세요.
-
-반드시 다음 JSON 형식으로만 응답하세요:
-{
-  "isFinal": true,
-  "menuName": "구체적인 추천 메뉴명 (예: 들기름 막국수, 매콤 소고기 버섯전골, 크림 트러플 뇨끼)",
-  "category": "한식, 일식, 중식, 양식, 아시안 중 하나"
-}
-`;
-      const result = await model.generateContent(prompt);
-      return NextResponse.json(JSON.parse(result.response.text()));
-    }
-  } catch (error: any) {
-    console.error('Gemini Route Error:', error);
-    return NextResponse.json(
-      {
-        isFinal: false,
-        question: '오늘 끌리는 맛의 온도는?',
-        optionA: '🔥 화끈하고 자극적인 매운맛',
-        optionB: '🍵 은은하고 부드러운 순한맛',
-      },
-      { status: 200 }
-    );
-  }
-}
-</file>
-
-<file path="src/app/cafe/page.tsx">
-import Link from 'next/link';
-import CafeFinder from '@/components/cafe/CafeFinder';
-
-export default function CafePage() {
-  return (
-    <main className="max-w-md mx-auto min-h-screen px-5 pt-6 pb-12 flex flex-col gap-4 bg-[#FAF7F2] text-[#2D241E]">
-      <header className="flex items-center justify-between pb-3 border-b border-[#EADFCF]">
-        <div className="flex items-center gap-2.5">
-          <Link
-            href="/"
-            className="font-title text-xs text-[#7A6251] hover:text-[#2D241E] px-3.5 py-1.5 bg-white border-2 border-[#EADFCF] rounded-2xl shadow-xs transition active:scale-95"
-          >
-            ← 홈으로
-          </Link>
-          <h1 className="font-title text-lg tracking-tight text-[#2D241E] flex items-center gap-1.5">
-            카페 어디가지? <span className="text-[#A86F3D]">☕</span>
-          </h1>
-        </div>
-        <Link
-          href="/map"
-          className="font-title text-xs text-[#F3D5B5] bg-[#2D241E] hover:bg-[#43362E] px-3.5 py-1.5 rounded-2xl border border-[#1E1713] transition active:scale-95 shadow-xs"
-        >
-          🗺️ 내 지도 보기
-        </Link>
-      </header>
-
-      <CafeFinder />
-    </main>
-  );
-}
-</file>
-
-<file path="src/app/food/page.tsx">
-import Link from 'next/link';
-import FoodBalanceGame from '@/components/food/FoodBalanceGame';
-
-export default function FoodPage() {
-  return (
-    <main className="max-w-md mx-auto min-h-screen px-5 pt-6 pb-12 flex flex-col gap-4 bg-[#FAF7F2] text-[#2D241E]">
-      <header className="flex items-center justify-between pb-3 border-b border-[#EADFCF]">
-        <div className="flex items-center gap-2.5">
-          <Link
-            href="/map"
-            className="font-title text-xs text-[#7A6251] hover:text-[#2D241E] px-3.5 py-1.5 bg-white border-2 border-[#EADFCF] rounded-2xl shadow-xs transition active:scale-95"
-          >
-            ← 지도로 돌아가기
-          </Link>
-          <h1 className="font-title text-lg tracking-tight text-[#2D241E] flex items-center gap-1.5">
-            오늘 뭐 먹지? <span className="text-[#C25E3E]">🍕</span>
-          </h1>
-        </div>
-      </header>
-
-      <FoodBalanceGame />
-    </main>
-  );
-}
-</file>
-
 <file path="src/types/kakao.d.ts">
 declare global {
   interface Window {
@@ -943,52 +959,6 @@ declare global {
 }
 
 export {};
-</file>
-
-<file path=".gitignore">
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-.vercel
 </file>
 
 <file path="AGENTS.md">
@@ -1082,6 +1052,163 @@ export default config;
     "**/*.mts"
   ],
   "exclude": ["node_modules"]
+}
+</file>
+
+<file path="src/app/api/food-recommend/route.ts">
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { NextResponse } from 'next/server';
+
+const apiKey = process.env.GEMINI_API_KEY || '';
+const genAI = new GoogleGenerativeAI(apiKey);
+
+export async function POST(req: Request) {
+  try {
+    const { history, step } = await req.json();
+
+    if (!apiKey) {
+      return NextResponse.json({ error: 'GEMINI_API_KEY 없음' }, { status: 500 });
+    }
+
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
+      generationConfig: {
+        responseMimeType: 'application/json',
+        temperature: 0.95,
+        maxOutputTokens: 250,
+        // @ts-ignore
+        thinkingConfig: {
+          thinkingBudget: 100, // 약 0.5초 내외로 가볍게 고민 후 즉시 출력
+        },
+      },
+    });
+
+    // 첫 번째 질문 제외 4번의 질문 진행 -> 총 5단계(Step 0~4) 선택 완료 시 최종 결과(step >= 5)
+    const isFinal = step >= 5;
+
+    if (!isFinal) {
+      const prompt = `
+사용자가 음식 메뉴를 추천받기 위해 지금까지 선택한 취향 목록입니다:
+${history.map((h: string, idx: number) => `- ${idx === 0 ? '기본 베이스' : `${idx}단계 취향`}: ${h}`).join('\n')}
+
+[규칙]
+1. 절대로 '제육덮밥', '칼국수', '삼겹살' 같은 구체적인 특정 음식 메뉴명을 선택지(optionA, optionB)로 제시하지 마세요.
+2. 대신 사용자의 미각, 감각, 식사 스타일 취향을 묻는 밸런스 질문을 1개 만드세요. (단, 갈 수록 질문이 세심해져야합니다. 처음부터 너무 선택지를 확 좁히는 질문 X)
+   - 예시: 
+     - 맵기: "🔥 스트레스 풀리는 매콤함" vs "🤍 속 편안하고 담백한 맛"
+     - 국물/식감: "🍲 깊고 진한 뜨끈한 국물" vs "🥢 꾸덕하고 쫄깃하게 비벼먹는 스타일"
+     - 온도/무게감: "🧊 입맛 돋우는 시원하고 산뜻함" vs "♨️ 이열치열 든든하고 묵직한 포만감"
+     - 기름기/느낌: "🧈 풍미 가득 기름진 고소함" vs "🥗 깔끔하고 개운한 뒷맛"
+     - 식사 무드: "🏮 로컬 감성의 찐한 한 상" vs "✨ 정갈하고 세련된 플레이팅"
+     (예시는 예시일뿐 그대로 사용하지 말아주세요.)
+3. 앞서 나온 선택들과 중복되지 않는 새로운 축의 취향 질문을 던져주세요.
+4. 앞서 나온 선택을 통해 유추할 수 있는 음식 취향 질문을 던져주세요. (가지치기 느낌)
+   - 예시 :
+     - 국물 취향을 골랐다면 국물 음식 취향에서 가지치기를 하여 취향 질문을 던져주세요.
+     - 맵지 않은 것이 좋다는 취향을 골랐다면 맵지 않은 음식들과 관련된 취향 질문을 던져주세요.
+5. question(질문 문장)은 공백 포함 반드시 20글자 이내로 간결하게 작성하세요.
+6. optionA와 optionB 선택지 문구는 이모지 포함 15자 내외로 균형 있게 작성하세요.
+
+반드시 다음 JSON 형식으로만 응답하세요:
+{
+  "isFinal": false,
+  "question": "20자 이내의 센스 있는 질문",
+  "optionA": "선택지 A",
+  "optionB": "선택지 B"
+}
+`;
+      const result = await model.generateContent(prompt);
+      return NextResponse.json(JSON.parse(result.response.text()));
+    } else {
+      const prompt = `
+사용자가 다음 5가지 취향 선택을 통해 음식을 골랐습니다:
+${history.map((h: string, idx: number) => `- ${idx === 0 ? '기본 베이스' : `${idx}단계 취향`}: ${h}`).join('\n')}
+
+위 5가지 취향 조건(베이스 + 4가지 세부 취향)을 모두 충족하는 가장 매력적이고 구체적인 음식 메뉴 이름 1개를 추천해주세요.
+설명이나 수식어는 필요 없으며 메뉴명만 단답으로 지정하세요.
+
+반드시 다음 JSON 형식으로만 응답하세요:
+{
+  "isFinal": true,
+  "menuName": "구체적인 추천 메뉴명 (예: 들기름 막국수, 매콤 소고기 버섯전골, 크림 트러플 뇨끼)",
+  "category": "한식, 분식, 일식, 중식, 양식, 고기 구이, 족발/보쌈, 아시안 중 하나"
+}
+`;
+      const result = await model.generateContent(prompt);
+      return NextResponse.json(JSON.parse(result.response.text()));
+    }
+  } catch (error: any) {
+    console.error('Gemini Route Error:', error);
+    return NextResponse.json(
+      {
+        isFinal: false,
+        question: '오늘 끌리는 맛의 온도는?',
+        optionA: '🔥 화끈하고 자극적인 매운맛',
+        optionB: '🍵 은은하고 부드러운 순한맛',
+      },
+      { status: 200 }
+    );
+  }
+}
+</file>
+
+<file path="src/app/cafe/page.tsx">
+import Link from 'next/link';
+import CafeFinder from '@/components/cafe/CafeFinder';
+
+export default function CafePage() {
+  return (
+    <main className="max-w-md mx-auto min-h-screen px-5 pt-6 pb-12 flex flex-col gap-4 bg-[#FAF7F2] text-[#2D241E]">
+      <header className="flex items-center justify-between pb-3 border-b border-[#EADFCF]">
+        <div className="flex items-center gap-2.5">
+          <Link
+            href="/"
+            className="font-title text-xs text-[#7A6251] hover:text-[#2D241E] px-3.5 py-1.5 bg-white border-2 border-[#EADFCF] rounded-2xl shadow-xs transition active:scale-95"
+          >
+            ← 홈으로
+          </Link>
+          <h1 className="font-title text-lg tracking-tight text-[#2D241E] flex items-center gap-1.5">
+            카페 어디가지? <span className="text-[#A86F3D]">☕</span>
+          </h1>
+        </div>
+        <Link
+          href="/map"
+          className="font-title text-xs text-[#F3D5B5] bg-[#2D241E] hover:bg-[#43362E] px-3.5 py-1.5 rounded-2xl border border-[#1E1713] transition active:scale-95 shadow-xs"
+        >
+          🗺️ 내 지도 보기
+        </Link>
+      </header>
+
+      <CafeFinder />
+    </main>
+  );
+}
+</file>
+
+<file path="src/app/food/page.tsx">
+import Link from 'next/link';
+import FoodBalanceGame from '@/components/food/FoodBalanceGame';
+
+export default function FoodPage() {
+  return (
+    <main className="max-w-md mx-auto min-h-screen px-5 pt-6 pb-12 flex flex-col gap-4 bg-[#FAF7F2] text-[#2D241E]">
+      <header className="flex items-center justify-between pb-3 border-b border-[#EADFCF]">
+        <div className="flex items-center gap-2.5">
+          <Link
+            href="/map"
+            className="font-title text-xs text-[#7A6251] hover:text-[#2D241E] px-3.5 py-1.5 bg-white border-2 border-[#EADFCF] rounded-2xl shadow-xs transition active:scale-95"
+          >
+            ← 지도로 돌아가기
+          </Link>
+          <h1 className="font-title text-lg tracking-tight text-[#2D241E] flex items-center gap-1.5">
+            오늘 뭐 먹지? <span className="text-[#C25E3E]">🍕</span>
+          </h1>
+        </div>
+      </header>
+
+      <FoodBalanceGame />
+    </main>
+  );
 }
 </file>
 
@@ -1181,383 +1308,50 @@ export default function MapPage() {
 }
 </file>
 
-<file path="src/app/layout.tsx">
-import type { Metadata } from 'next';
-import './globals.css';
+<file path=".gitignore">
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-export const metadata: Metadata = {
-  title: 'Routy - 데이트 찜 지도',
-  description: '가고 싶은 곳은 빈 하트, 다녀온 곳은 채운 하트!',
-};
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="ko">
-      <body className="bg-[#FAF7F2] text-[#2D241E] antialiased min-h-screen">
-        {children}
-      </body>
-    </html>
-  );
-}
-</file>
+# testing
+/coverage
 
-<file path="src/components/cafe/CafeFinder.tsx">
-'use client';
+# next.js
+/.next/
+/out/
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+# production
+/build
 
-// 크로플 제외, 구움과자 및 에그타르트 추가
-const DESSERT_TAGS = ['전체 (거리순)', '소금빵', '에그타르트', '구움과자', '프렌치토스트', '수플레', '베이글', '케이크'];
+# misc
+.DS_Store
+*.pem
 
-export default function CafeFinder() {
-  const [selectedTag, setSelectedTag] = useState<string>('전체 (거리순)');
-  const [cafes, setCafes] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [sdkReady, setSdkReady] = useState<boolean>(false);
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
-  // 기준 위치 상태
-  const [currentLocationName, setCurrentLocationName] = useState<string>('');
-  const [customLocationInput, setCustomLocationInput] = useState<string>('');
-  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+# env files (can opt-in for committing if needed)
+.env*
 
-  // 위치 자동완성 후보 상태
-  const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
-  const suggestionContainerRef = useRef<HTMLDivElement>(null);
+# vercel
+.vercel
 
-  // 1. 카카오 지도 SDK 로더
-  useEffect(() => {
-    const apiKey = process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY;
-    if (!apiKey) return;
+# typescript
+*.tsbuildinfo
+next-env.d.ts
 
-    const checkSdk = () => {
-      if (window.kakao?.maps?.services) {
-        setSdkReady(true);
-        return true;
-      }
-      return false;
-    };
-
-    if (checkSdk()) return;
-
-    const existingScript = document.getElementById('kakao-map-script');
-    if (!existingScript) {
-      const script = document.createElement('script');
-      script.id = 'kakao-map-script';
-      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false&libraries=services`;
-      script.async = true;
-      document.head.appendChild(script);
-      script.onload = () => {
-        window.kakao.maps.load(() => {
-          setSdkReady(true);
-        });
-      };
-    } else {
-      const interval = setInterval(() => {
-        if (checkSdk()) clearInterval(interval);
-      }, 200);
-      return () => clearInterval(interval);
-    }
-  }, []);
-
-  // 외부 클릭 시 후보창 닫기
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        suggestionContainerRef.current &&
-        !suggestionContainerRef.current.contains(e.target as Node)
-      ) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  // 2. 카페 검색 함수
-  const searchCafes = useCallback((targetCoords: { lat: number; lng: number }, tag: string) => {
-    if (!window.kakao?.maps?.services) return;
-    setIsLoading(true);
-
-    const ps = new window.kakao.maps.services.Places();
-    const isAll = tag === '전체 (거리순)';
-
-    const searchCallback = (data: any, status: any) => {
-      setIsLoading(false);
-      if (status === window.kakao.maps.services.Status.OK) {
-        setCafes(data || []);
-      } else {
-        setCafes([]);
-      }
-    };
-
-    const searchOptions = {
-      location: new window.kakao.maps.LatLng(targetCoords.lat, targetCoords.lng),
-      radius: 1000, // 반경 1km
-      sort: window.kakao.maps.services.SortBy.DISTANCE,
-    };
-
-    if (isAll) {
-      ps.categorySearch('CE7', searchCallback, searchOptions);
-    } else {
-      ps.keywordSearch(`${tag} 카페`, searchCallback, searchOptions);
-    }
-  }, []);
-
-  // 3. 좌표나 태그 변경 시 검색
-  useEffect(() => {
-    if (sdkReady && coords) {
-      searchCafes(coords, selectedTag);
-    }
-  }, [sdkReady, coords, selectedTag, searchCafes]);
-
-  // 4. 입력 시 실시간 위치 후보 검색 (디바운스 250ms)
-  useEffect(() => {
-    if (!sdkReady || !customLocationInput.trim() || !window.kakao?.maps?.services) {
-      setLocationSuggestions([]);
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      const ps = new window.kakao.maps.services.Places();
-      ps.keywordSearch(customLocationInput.trim(), (data: any, status: any) => {
-        if (status === window.kakao.maps.services.Status.OK && data) {
-          setLocationSuggestions(data.slice(0, 5));
-          setShowSuggestions(true);
-        } else {
-          setLocationSuggestions([]);
-        }
-      });
-    }, 250);
-
-    return () => clearTimeout(timer);
-  }, [customLocationInput, sdkReady]);
-
-  // 5. 후보 중 하나를 클릭해 위치 선택했을 때
-  const handleSelectSuggestion = (place: any) => {
-    const newCoords = {
-      lat: parseFloat(place.y),
-      lng: parseFloat(place.x),
-    };
-    setCoords(newCoords);
-    setCurrentLocationName(place.place_name);
-    setCustomLocationInput('');
-    setShowSuggestions(false);
-    searchCafes(newCoords, selectedTag);
-  };
-
-  // 6. 직접 검색 시
-  const handleCustomLocationSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (locationSuggestions.length > 0) {
-      handleSelectSuggestion(locationSuggestions[0]);
-    } else if (customLocationInput.trim() && window.kakao?.maps?.services) {
-      setIsLoading(true);
-      const ps = new window.kakao.maps.services.Places();
-      ps.keywordSearch(customLocationInput, (data: any, status: any) => {
-        setIsLoading(false);
-        if (status === window.kakao.maps.services.Status.OK && data[0]) {
-          handleSelectSuggestion(data[0]);
-        } else {
-          alert('입력하신 위치를 찾을 수 없습니다.');
-        }
-      });
-    }
-  };
-
-  // 7. 내 현재 위치 가져오기
-  const handleFetchCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      alert('브라우저에서 위치 정보를 지원하지 않습니다.');
-      return;
-    }
-
-    setIsLoading(true);
-    setShowSuggestions(false);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const newCoords = {
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        };
-        setCoords(newCoords);
-        setCurrentLocationName('내 현재 위치');
-        searchCafes(newCoords, selectedTag);
-      },
-      () => {
-        setIsLoading(false);
-        alert('위치 권한이 거부되었거나 신호를 찾을 수 없습니다. 아래 검색창을 이용해 주세요!');
-      },
-      { timeout: 7000 }
-    );
-  };
-
-  return (
-    <div className="flex flex-col gap-4 text-[#2D241E]">
-      {/* 1. 기준 위치 컨트롤 바 및 후보 드롭다운 */}
-      <div 
-        ref={suggestionContainerRef}
-        className="relative bg-white p-4 rounded-[26px] border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] flex flex-col gap-3 z-30"
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 overflow-hidden">
-            <span className="font-title text-[10px] text-[#A86F3D] bg-[#FBF5ED] px-2 py-0.5 rounded-md border border-[#EFE4D6]">
-              기준 위치
-            </span>
-            <span className="font-title text-xs text-[#2D241E] truncate max-w-[170px]">
-              {currentLocationName ? `📍 ${currentLocationName}` : '위치를 설정해주세요'}
-            </span>
-          </div>
-          <button
-            onClick={handleFetchCurrentLocation}
-            className="font-title text-xs px-3.5 py-1.5 bg-[#FAF7F2] hover:bg-[#F3ECE0] border border-[#EADFCF] rounded-xl text-[#7A6251] transition active:scale-95 shrink-0 flex items-center gap-1"
-          >
-            <span>🎯</span> 내 위치
-          </button>
-        </div>
-
-        {/* 위치 검색 인풋 */}
-        <form onSubmit={handleCustomLocationSubmit} className="relative flex gap-2">
-          <input
-            type="text"
-            placeholder="동네나 지하철역 검색 (예: 성수역, 연남동)"
-            value={customLocationInput}
-            onFocus={() => {
-              if (locationSuggestions.length > 0) setShowSuggestions(true);
-            }}
-            onChange={(e) => setCustomLocationInput(e.target.value)}
-            className="font-body flex-1 px-3.5 py-2.5 text-xs bg-[#FAF7F2] rounded-xl border border-[#EADFCF] text-[#2D241E] focus:outline-none focus:border-[#A86F3D]"
-          />
-          <button
-            type="submit"
-            className="font-title px-4 py-2.5 bg-[#2D241E] hover:bg-[#43362E] text-white text-xs rounded-xl transition shrink-0 active:scale-95"
-          >
-            선택
-          </button>
-
-          {/* 실시간 위치 후보 드롭다운 */}
-          {showSuggestions && locationSuggestions.length > 0 && (
-            <div className="absolute top-12 left-0 right-16 bg-white border-2 border-[#EADFCF] rounded-2xl shadow-xl overflow-hidden z-50 flex flex-col divide-y divide-[#F2EAE0]">
-              {locationSuggestions.map((place) => (
-                <button
-                  key={place.id}
-                  type="button"
-                  onClick={() => handleSelectSuggestion(place)}
-                  className="px-3.5 py-2.5 text-left hover:bg-[#FAF7F2] transition flex flex-col gap-0.5 active:bg-[#F6EFE6]"
-                >
-                  <span className="font-title text-xs text-[#2D241E] truncate">
-                    📍 {place.place_name}
-                  </span>
-                  <span className="font-body text-[10px] text-[#8C7A6B] truncate">
-                    {place.road_address_name || place.address_name}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-        </form>
-      </div>
-
-      {/* 2. 카테고리 칩 (구움과자, 에그타르트 반영) */}
-      <div className="flex gap-2 items-center overflow-x-auto pb-1 no-scrollbar">
-        {DESSERT_TAGS.map((tag) => (
-          <button
-            key={tag}
-            onClick={() => setSelectedTag(tag)}
-            className={`font-title px-4 py-2 rounded-2xl text-xs transition whitespace-nowrap active:scale-95 ${
-              selectedTag === tag
-                ? 'bg-[#2D241E] text-[#F3D5B5] shadow-xs'
-                : 'bg-white text-[#7A6251] border-2 border-[#EADFCF] hover:bg-[#FAF7F2]'
-            }`}
-          >
-            {tag}
-          </button>
-        ))}
-      </div>
-
-      {/* 3. 카페 리스트 및 상태 표시 */}
-      <div className="flex flex-col gap-2.5">
-        <div className="flex justify-between items-center px-1">
-          <span className="font-title text-xs text-[#7A6251]">
-            반경 1km 거리순 {coords ? `(${cafes.length}곳)` : ''}
-          </span>
-          <span className="font-body text-xs text-[#A89889]">
-            선택: {selectedTag}
-          </span>
-        </div>
-
-        {/* 위치 미설정 상태 */}
-        {!coords && !isLoading && (
-          <div className="font-body p-12 text-center bg-white rounded-3xl border-2 border-dashed border-[#EADFCF] text-xs text-[#8C7A6B] flex flex-col items-center gap-2">
-            <span className="text-3xl">📍</span>
-            <p className="font-title text-sm text-[#2D241E] mt-1">기준 위치가 설정되지 않았습니다</p>
-            <p className="leading-relaxed">
-              상단의 <b>[내 위치]</b> 버튼을 누르거나<br />
-              원하는 동네를 입력해 후보를 선택해 보세요!
-            </p>
-          </div>
-        )}
-
-        {/* 로딩 상태 */}
-        {isLoading && (
-          <div className="py-16 text-center flex flex-col items-center justify-center gap-2">
-            <div className="w-8 h-8 border-3 border-[#A86F3D] border-t-transparent rounded-full animate-spin" />
-            <p className="font-body text-xs text-[#8C7A6B]">반경 1km 이내 카페를 찾고 있습니다...</p>
-          </div>
-        )}
-
-        {/* 검색 결과 없음 */}
-        {coords && !isLoading && cafes.length === 0 && (
-          <div className="font-body p-8 text-center bg-white rounded-2xl border-2 border-dashed border-[#EADFCF] text-xs text-[#8C7A6B]">
-            반경 1km 이내에 해당하는 카페가 없습니다.<br />
-            다른 디저트를 누르거나 기준 위치를 변경해 보세요!
-          </div>
-        )}
-
-        {/* 카페 리스트 카드 */}
-        {coords && !isLoading && cafes.length > 0 && (
-          cafes.map((cafe) => (
-            <div
-              key={cafe.id}
-              className="p-4 bg-white rounded-[24px] border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between"
-            >
-              <div className="text-left overflow-hidden pr-2">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-title text-sm text-[#2D241E] truncate">{cafe.place_name}</h3>
-                  {cafe.distance && (
-                    <span className="font-title text-[10px] text-[#A86F3D] bg-[#FBF5ED] px-2 py-0.5 rounded-md border border-[#EFE4D6] shrink-0">
-                      {cafe.distance}m
-                    </span>
-                  )}
-                </div>
-                <p className="font-body text-xs text-[#8C7A6B] mt-0.5 truncate">
-                  {cafe.road_address_name || cafe.address_name}
-                </p>
-                {cafe.phone && (
-                  <p className="font-body text-[11px] text-[#A89889] mt-0.5">📞 {cafe.phone}</p>
-                )}
-              </div>
-
-              <a
-                href={cafe.place_url || `https://place.map.kakao.com/${cafe.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-title text-xs px-3.5 py-2.5 bg-[#FAF7F2] text-[#2D241E] border-2 border-[#EADFCF] hover:border-[#A86F3D] hover:bg-white rounded-xl transition-all shrink-0 active:scale-95 flex items-center gap-1"
-              >
-                <span>상세보기</span>
-                <span className="text-[10px] text-[#A86F3D]">↗</span>
-              </a>
-            </div>
-          ))
-        )}
-      </div>
-    </div>
-  );
-}
+.vercel
 </file>
 
 <file path="package.json">
@@ -1629,6 +1423,428 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 </file>
 
+<file path="src/app/layout.tsx">
+import type { Metadata } from 'next';
+import './globals.css';
+
+export const metadata: Metadata = {
+  title: 'Routy - 데이트 찜 지도',
+  description: '가고 싶은 곳은 빈 하트, 다녀온 곳은 채운 하트!',
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="ko">
+      <body className="bg-[#FAF7F2] text-[#2D241E] antialiased min-h-screen">
+        {children}
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="src/components/cafe/CafeFinder.tsx">
+'use client';
+
+import { useState, useEffect, useCallback, useRef } from 'react';
+
+const DESSERT_TAGS = ['전체 (거리순)', '소금빵', '에그타르트', '구움과자', '프렌치토스트', '수플레', '베이글', '케이크'];
+
+export default function CafeFinder() {
+  const [selectedTag, setSelectedTag] = useState<string>('전체 (거리순)');
+  const [cafes, setCafes] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
+  const [sdkReady, setSdkReady] = useState<boolean>(false);
+
+  // 기준 위치 상태
+  const [currentLocationName, setCurrentLocationName] = useState<string>('');
+  const [customLocationInput, setCustomLocationInput] = useState<string>('');
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+
+  // 위치 자동완성 후보 상태
+  const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+  const suggestionContainerRef = useRef<HTMLDivElement>(null);
+
+  // 무한 스크롤 및 카카오 pagination 참조
+  const paginationRef = useRef<any>(null);
+  const observerTargetRef = useRef<HTMLDivElement>(null);
+  const [hasNextPage, setHasNextPage] = useState<boolean>(false);
+
+  // 1. 카카오 지도 SDK 로더
+  useEffect(() => {
+    const apiKey = process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY;
+    if (!apiKey) return;
+
+    const checkSdk = () => {
+      if (window.kakao?.maps?.services) {
+        setSdkReady(true);
+        return true;
+      }
+      return false;
+    };
+
+    if (checkSdk()) return;
+
+    const existingScript = document.getElementById('kakao-map-script');
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.id = 'kakao-map-script';
+      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false&libraries=services`;
+      script.async = true;
+      document.head.appendChild(script);
+      script.onload = () => {
+        window.kakao.maps.load(() => {
+          setSdkReady(true);
+        });
+      };
+    } else {
+      const interval = setInterval(() => {
+        if (checkSdk()) clearInterval(interval);
+      }, 200);
+      return () => clearInterval(interval);
+    }
+  }, []);
+
+  // 외부 클릭 시 후보창 닫기
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        suggestionContainerRef.current &&
+        !suggestionContainerRef.current.contains(e.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // 2. 카페 검색 함수 (pagination 지원)
+  const searchCafes = useCallback((targetCoords: { lat: number; lng: number }, tag: string) => {
+    if (!window.kakao?.maps?.services) return;
+    setIsLoading(true);
+    setCafes([]);
+    paginationRef.current = null;
+    setHasNextPage(false);
+
+    const ps = new window.kakao.maps.services.Places();
+    const isAll = tag === '전체 (거리순)';
+
+    const searchCallback = (data: any, status: any, pagination: any) => {
+      setIsLoading(false);
+      setIsLoadingMore(false);
+
+      if (status === window.kakao.maps.services.Status.OK) {
+        if (pagination.current === 1) {
+          setCafes(data || []);
+        } else {
+          setCafes((prev) => [...prev, ...(data || [])]);
+        }
+        paginationRef.current = pagination;
+        setHasNextPage(Boolean(pagination.hasNextPage));
+      } else {
+        if (!paginationRef.current || paginationRef.current.current === 1) {
+          setCafes([]);
+          setHasNextPage(false);
+        }
+      }
+    };
+
+    const searchOptions = {
+      location: new window.kakao.maps.LatLng(targetCoords.lat, targetCoords.lng),
+      radius: 1000,
+      sort: window.kakao.maps.services.SortBy.DISTANCE,
+    };
+
+    if (isAll) {
+      ps.categorySearch('CE7', searchCallback, searchOptions);
+    } else {
+      ps.keywordSearch(`${tag} 카페`, searchCallback, searchOptions);
+    }
+  }, []);
+
+  // 3. 스크롤 감지 무한 로드 (Intersection Observer)
+  useEffect(() => {
+    const target = observerTargetRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (
+          entries[0].isIntersecting &&
+          paginationRef.current?.hasNextPage &&
+          !isLoading &&
+          !isLoadingMore
+        ) {
+          setIsLoadingMore(true);
+          paginationRef.current.nextPage();
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [isLoading, isLoadingMore, hasNextPage]);
+
+  // 4. 좌표나 태그 변경 시 검색
+  useEffect(() => {
+    if (sdkReady && coords) {
+      searchCafes(coords, selectedTag);
+    }
+  }, [sdkReady, coords, selectedTag, searchCafes]);
+
+  // 5. 실시간 위치 후보 검색 (디바운스 250ms)
+  useEffect(() => {
+    if (!sdkReady || !customLocationInput.trim() || !window.kakao?.maps?.services) {
+      setLocationSuggestions([]);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      const ps = new window.kakao.maps.services.Places();
+      ps.keywordSearch(customLocationInput.trim(), (data: any, status: any) => {
+        if (status === window.kakao.maps.services.Status.OK && data) {
+          setLocationSuggestions(data.slice(0, 5));
+          setShowSuggestions(true);
+        } else {
+          setLocationSuggestions([]);
+        }
+      });
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [customLocationInput, sdkReady]);
+
+  const handleSelectSuggestion = (place: any) => {
+    const newCoords = {
+      lat: parseFloat(place.y),
+      lng: parseFloat(place.x),
+    };
+    setCoords(newCoords);
+    setCurrentLocationName(place.place_name);
+    setCustomLocationInput('');
+    setShowSuggestions(false);
+    searchCafes(newCoords, selectedTag);
+  };
+
+  const handleCustomLocationSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (locationSuggestions.length > 0) {
+      handleSelectSuggestion(locationSuggestions[0]);
+    } else if (customLocationInput.trim() && window.kakao?.maps?.services) {
+      setIsLoading(true);
+      const ps = new window.kakao.maps.services.Places();
+      ps.keywordSearch(customLocationInput, (data: any, status: any) => {
+        setIsLoading(false);
+        if (status === window.kakao.maps.services.Status.OK && data[0]) {
+          handleSelectSuggestion(data[0]);
+        } else {
+          alert('입력하신 위치를 찾을 수 없습니다.');
+        }
+      });
+    }
+  };
+
+  const handleFetchCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert('브라우저에서 위치 정보를 지원하지 않습니다.');
+      return;
+    }
+
+    setIsLoading(true);
+    setShowSuggestions(false);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const newCoords = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        };
+        setCoords(newCoords);
+        setCurrentLocationName('내 현재 위치');
+        searchCafes(newCoords, selectedTag);
+      },
+      () => {
+        setIsLoading(false);
+        alert('위치 권한이 거부되었거나 신호를 찾을 수 없습니다. 아래 검색창을 이용해 주세요!');
+      },
+      { timeout: 7000 }
+    );
+  };
+
+  return (
+    <div className="flex flex-col gap-4 text-[#2D241E]">
+      <div 
+        ref={suggestionContainerRef}
+        className="relative bg-white p-4 rounded-[26px] border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] flex flex-col gap-3 z-30"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5 overflow-hidden">
+            <span className="font-title text-[10px] text-[#A86F3D] bg-[#FBF5ED] px-2 py-0.5 rounded-md border border-[#EFE4D6]">
+              기준 위치
+            </span>
+            <span className="font-title text-xs text-[#2D241E] truncate max-w-[170px]">
+              {currentLocationName ? `📍 ${currentLocationName}` : '위치를 설정해주세요'}
+            </span>
+          </div>
+          <button
+            onClick={handleFetchCurrentLocation}
+            className="font-title text-xs px-3.5 py-1.5 bg-[#FAF7F2] hover:bg-[#F3ECE0] border border-[#EADFCF] rounded-xl text-[#7A6251] transition active:scale-95 shrink-0 flex items-center gap-1"
+          >
+            <span>🎯</span> 내 위치
+          </button>
+        </div>
+
+        <form onSubmit={handleCustomLocationSubmit} className="relative flex gap-2">
+          <input
+            type="text"
+            placeholder="동네나 지하철역 검색 (예: 성수역, 연남동)"
+            value={customLocationInput}
+            onFocus={() => {
+              if (locationSuggestions.length > 0) setShowSuggestions(true);
+            }}
+            onChange={(e) => setCustomLocationInput(e.target.value)}
+            className="font-body flex-1 px-3.5 py-2.5 text-xs bg-[#FAF7F2] rounded-xl border border-[#EADFCF] text-[#2D241E] focus:outline-none focus:border-[#A86F3D]"
+          />
+          <button
+            type="submit"
+            className="font-title px-4 py-2.5 bg-[#2D241E] hover:bg-[#43362E] text-white text-xs rounded-xl transition shrink-0 active:scale-95"
+          >
+            선택
+          </button>
+
+          {showSuggestions && locationSuggestions.length > 0 && (
+            <div className="absolute top-12 left-0 right-16 bg-white border-2 border-[#EADFCF] rounded-2xl shadow-xl overflow-hidden z-50 flex flex-col divide-y divide-[#F2EAE0]">
+              {locationSuggestions.map((place) => (
+                <button
+                  key={place.id}
+                  type="button"
+                  onClick={() => handleSelectSuggestion(place)}
+                  className="px-3.5 py-2.5 text-left hover:bg-[#FAF7F2] transition flex flex-col gap-0.5 active:bg-[#F6EFE6]"
+                >
+                  <span className="font-title text-xs text-[#2D241E] truncate">
+                    📍 {place.place_name}
+                  </span>
+                  <span className="font-body text-[10px] text-[#8C7A6B] truncate">
+                    {place.road_address_name || place.address_name}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </form>
+      </div>
+
+      <div className="flex gap-2 items-center overflow-x-auto pb-1 no-scrollbar">
+        {DESSERT_TAGS.map((tag) => (
+          <button
+            key={tag}
+            onClick={() => setSelectedTag(tag)}
+            className={`font-title px-4 py-2 rounded-2xl text-xs transition whitespace-nowrap active:scale-95 ${
+              selectedTag === tag
+                ? 'bg-[#2D241E] text-[#F3D5B5] shadow-xs'
+                : 'bg-white text-[#7A6251] border-2 border-[#EADFCF] hover:bg-[#FAF7F2]'
+            }`}
+          >
+            {tag}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex flex-col gap-2.5">
+        <div className="flex justify-between items-center px-1">
+          <span className="font-title text-xs text-[#7A6251]">
+            반경 1km 거리순
+          </span>
+          <span className="font-body text-xs text-[#A89889]">
+            선택: {selectedTag}
+          </span>
+        </div>
+
+        {!coords && !isLoading && (
+          <div className="font-body p-12 text-center bg-white rounded-3xl border-2 border-dashed border-[#EADFCF] text-xs text-[#8C7A6B] flex flex-col items-center gap-2">
+            <span className="text-3xl">📍</span>
+            <p className="font-title text-sm text-[#2D241E] mt-1">기준 위치가 설정되지 않았습니다</p>
+            <p className="leading-relaxed">
+              상단의 <b>[내 위치]</b> 버튼을 누르거나<br />
+              원하는 동네를 입력해 후보를 선택해 보세요!
+            </p>
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="py-16 text-center flex flex-col items-center justify-center gap-2">
+            <div className="w-8 h-8 border-3 border-[#A86F3D] border-t-transparent rounded-full animate-spin" />
+            <p className="font-body text-xs text-[#8C7A6B]">반경 1km 이내 카페를 찾고 있습니다...</p>
+          </div>
+        )}
+
+        {coords && !isLoading && cafes.length === 0 && (
+          <div className="font-body p-8 text-center bg-white rounded-2xl border-2 border-dashed border-[#EADFCF] text-xs text-[#8C7A6B]">
+            반경 1km 이내에 해당하는 카페가 없습니다.<br />
+            다른 디저트를 누르거나 기준 위치를 변경해 보세요!
+          </div>
+        )}
+
+        {coords && !isLoading && cafes.length > 0 && (
+          <>
+            {cafes.map((cafe, index) => (
+              <div
+                key={`${cafe.id}-${index}`}
+                className="p-4 bg-white rounded-[24px] border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between"
+              >
+                <div className="text-left overflow-hidden pr-2">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-title text-sm text-[#2D241E] truncate">{cafe.place_name}</h3>
+                    {cafe.distance && (
+                      <span className="font-title text-[10px] text-[#A86F3D] bg-[#FBF5ED] px-2 py-0.5 rounded-md border border-[#EFE4D6] shrink-0">
+                        {cafe.distance}m
+                      </span>
+                    )}
+                  </div>
+                  <p className="font-body text-xs text-[#8C7A6B] mt-0.5 truncate">
+                    {cafe.road_address_name || cafe.address_name}
+                  </p>
+                  {cafe.phone && (
+                    <p className="font-body text-[11px] text-[#A89889] mt-0.5">📞 {cafe.phone}</p>
+                  )}
+                </div>
+
+                <a
+                  href={cafe.place_url || `https://place.map.kakao.com/${cafe.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-title text-xs px-3.5 py-2.5 bg-[#FAF7F2] text-[#2D241E] border-2 border-[#EADFCF] hover:border-[#A86F3D] hover:bg-white rounded-xl transition-all shrink-0 active:scale-95 flex items-center gap-1"
+                >
+                  <span>상세보기</span>
+                  <span className="text-[10px] text-[#A86F3D]">↗</span>
+                </a>
+              </div>
+            ))}
+
+            {/* 스크롤 감지 및 추가 로딩 영역 */}
+            <div ref={observerTargetRef} className="py-4 text-center">
+              {isLoadingMore && (
+                <div className="flex items-center justify-center gap-2 text-xs text-[#8C7A6B]">
+                  <div className="w-4 h-4 border-2 border-[#A86F3D] border-t-transparent rounded-full animate-spin" />
+                  <span>더 많은 카페 불러오는 중...</span>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+</file>
+
 <file path="src/components/food/FoodBalanceGame.tsx">
 'use client';
 
@@ -1639,6 +1855,7 @@ import { getCurrentUser } from '@/lib/authMock';
 interface FoodDetail {
   menuName: string;
   category: string;
+  date?: string;
 }
 
 const ROOT_OPTIONS = [
@@ -1646,6 +1863,14 @@ const ROOT_OPTIONS = [
   { label: '🍚 든든한 밥 요리', value: '밥 요리' },
   { label: '🥩 굽고 뜯는 고기 요리', value: '고기 요리' },
 ];
+
+const getTodayDateString = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 export default function FoodBalanceGame() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -1673,18 +1898,25 @@ export default function FoodBalanceGame() {
     if (currentRoom && currentRoom.members) {
       members = [...currentRoom.members];
     }
-    
-    if (members.length === 1) {
-      members.push('초대 대기중');
-    }
     setRoomMembers(members);
 
-    const myPickRaw = localStorage.getItem(`routy_food_result_${activeCode}_${currentUser}`);
+    // 자정 기준 자동 리셋 확인
+    const today = getTodayDateString();
+    const storageKey = `routy_food_result_${activeCode}_${currentUser}`;
+    const myPickRaw = localStorage.getItem(storageKey);
+
     if (myPickRaw) {
       try {
-        setMyResult(JSON.parse(myPickRaw));
+        const parsed = JSON.parse(myPickRaw);
+        if (parsed.date === today) {
+          setMyResult(parsed);
+        } else {
+          localStorage.removeItem(storageKey);
+          setMyResult(null);
+        }
       } catch {
-        setMyResult({ menuName: myPickRaw, category: '추천' });
+        localStorage.removeItem(storageKey);
+        setMyResult(null);
       }
     }
   }, []);
@@ -1725,10 +1957,17 @@ export default function FoodBalanceGame() {
 
       if (data.isFinal) {
         setIsPlaying(false);
-        setMyResult(data);
+        const finalResult: FoodDetail = {
+          ...data,
+          date: getTodayDateString(),
+        };
+        setMyResult(finalResult);
         
         const currentUser = getCurrentUser() || '';
-        localStorage.setItem(`routy_food_result_${activeRoomCode}_${currentUser}`, JSON.stringify(data));
+        localStorage.setItem(
+          `routy_food_result_${activeRoomCode}_${currentUser}`,
+          JSON.stringify(finalResult)
+        );
       } else {
         setAiQuestion(data.question);
         setAiOptions({ a: data.optionA, b: data.optionB });
@@ -1743,14 +1982,14 @@ export default function FoodBalanceGame() {
   return (
     <div className="flex flex-col gap-4 text-[#2D241E]">
       
-      {/* 가지치기 게임 영역 */}
-      <div className="bg-white rounded-[30px] p-6 border-2 border-[#EADFCF] shadow-[0_8px_24px_rgba(74,59,50,0.04)] min-h-[380px] flex flex-col justify-center relative overflow-hidden">
+      {/* 밸런스 게임 카드 */}
+      <div className="bg-white rounded-[30px] p-6 border-2 border-[#EADFCF] shadow-[0_8px_24px_rgba(74,59,50,0.04)] min-h-[360px] flex flex-col justify-center relative overflow-hidden">
         {isLoading ? (
           <div className="text-center flex flex-col items-center justify-center gap-3 py-12 animate-in fade-in">
             <div className="w-10 h-10 border-[3.5px] border-[#C25E3E] border-t-transparent rounded-full animate-spin" />
             <div className="flex flex-col gap-1">
               <h3 className="font-title text-sm text-[#2D241E]">
-                {step >= 4 ? '모아진 취향에 딱 맞는 메뉴 분석 중...' : '다음 취향 밸런스 만드는 중...'}
+                {step >= 4 ? '취향에 딱 맞는 메뉴 분석 중...' : '다음 취향 밸런스 만드는 중...'}
               </h3>
               <p className="font-body text-[11px] text-[#8C7A6B]">
                 {step >= 4 ? '취향 조각들을 맞춰보고 있어요 ✨' : '음식 대신 당신의 감각 취향을 좁혀갑니다'}
@@ -1764,7 +2003,7 @@ export default function FoodBalanceGame() {
             </div>
             <div>
               <h2 className="font-title text-2xl text-[#2D241E] tracking-tight">취향 밸런스 메뉴 찾기</h2>
-              <p className="font-body text-xs text-[#8C7A6B] mt-1.5 leading-relaxed">
+              <p className="font-body text-xs text-[#8C7A6B] mt-1.5 leading-relaxed break-keep">
                 특정 메뉴가 아닌 <b>맵기, 국물, 식감, 분위기</b> 등<br />
                 내 감각 취향 4가지를 골라 최적의 메뉴를 찾습니다!
               </p>
@@ -1778,21 +2017,12 @@ export default function FoodBalanceGame() {
           </div>
         ) : isPlaying ? (
           <div className="flex flex-col h-full w-full animate-in fade-in zoom-in-[0.98] duration-200">
-            <div className="text-center mb-6">
-              <div className="flex items-center justify-center gap-1.5 flex-wrap mb-2">
-                {history.map((h, i) => (
-                  <span
-                    key={i}
-                    className="font-title text-[10px] text-[#C25E3E] bg-[#F9ECE7] px-2.5 py-0.5 rounded-full border border-[#F2D1C5]"
-                  >
-                    {h} →
-                  </span>
-                ))}
-                <span className="font-title text-[10px] text-[#A89889] tracking-wider">
-                  Q{step + 1} / 5
-                </span>
-              </div>
-              <h2 className="font-title text-lg text-[#2D241E] tracking-tight">
+            {/* 상단: 이전 답변 목록 제거, 단계 배지만 단정하게 표시 */}
+            <div className="text-center mb-5">
+              <span className="font-title text-[11px] text-[#C25E3E] bg-[#F9ECE7] px-3 py-1 rounded-full border border-[#F2D1C5] inline-block mb-3">
+                STEP {step + 1} / 5
+              </span>
+              <h2 className="font-title text-base sm:text-lg text-[#2D241E] tracking-tight break-keep text-balance px-2 leading-snug">
                 {aiQuestion}
               </h2>
             </div>
@@ -1805,8 +2035,8 @@ export default function FoodBalanceGame() {
                     onClick={() => handleRootSelect(opt.value)}
                     className="w-full py-4 px-5 bg-[#FAF7F2] hover:bg-[#F5EFE6] border-2 border-[#EADFCF] hover:border-[#C25E3E]/50 text-[#2D241E] rounded-2xl transition-all text-left flex items-center justify-between active:scale-[0.99]"
                   >
-                    <span className="font-title text-sm">{opt.label}</span>
-                    <span className="font-title text-xs text-[#C25E3E]">선택 →</span>
+                    <span className="font-title text-sm break-keep">{opt.label}</span>
+                    <span className="font-title text-xs text-[#C25E3E] shrink-0">선택 →</span>
                   </button>
                 ))}
               </div>
@@ -1815,17 +2045,17 @@ export default function FoodBalanceGame() {
                 <div className="flex flex-col gap-3 flex-1 justify-center">
                   <button
                     onClick={() => handleBranchSelect(aiOptions.a)}
-                    className="font-title w-full py-5 px-4 bg-[#FAF7F2] hover:bg-[#FDF4F0] border-2 border-[#EADFCF] hover:border-[#C25E3E] text-[#2D241E] rounded-2xl text-xs sm:text-sm transition-all active:scale-[0.98] leading-snug"
+                    className="font-title w-full min-h-[60px] py-3.5 px-5 bg-[#FAF7F2] hover:bg-[#FDF4F0] border-2 border-[#EADFCF] hover:border-[#C25E3E] text-[#2D241E] rounded-2xl text-xs sm:text-sm transition-all active:scale-[0.98] leading-snug break-keep text-balance text-center flex items-center justify-center shadow-2xs"
                   >
                     {aiOptions.a}
                   </button>
-                  <div className="font-title text-center text-xs text-[#C25E3E] relative py-0.5">
+                  <div className="font-title text-center text-xs text-[#C25E3E] relative py-0.5 select-none">
                     <span className="bg-white px-2.5 relative z-10">VS</span>
-                    <div className="absolute top-1/2 left-6 right-6 h-px bg-[#EADFCF] -z-0" />
+                    <div className="absolute top-1/2 left-8 right-8 h-px bg-[#EADFCF] -z-0" />
                   </div>
                   <button
                     onClick={() => handleBranchSelect(aiOptions.b)}
-                    className="font-title w-full py-5 px-4 bg-[#FAF7F2] hover:bg-[#F3F7F8] border-2 border-[#EADFCF] hover:border-[#4B7280] text-[#2D241E] rounded-2xl text-xs sm:text-sm transition-all active:scale-[0.98] leading-snug"
+                    className="font-title w-full min-h-[60px] py-3.5 px-5 bg-[#FAF7F2] hover:bg-[#F3F7F8] border-2 border-[#EADFCF] hover:border-[#4B7280] text-[#2D241E] rounded-2xl text-xs sm:text-sm transition-all active:scale-[0.98] leading-snug break-keep text-balance text-center flex items-center justify-center shadow-2xs"
                   >
                     {aiOptions.b}
                   </button>
@@ -1840,7 +2070,7 @@ export default function FoodBalanceGame() {
             </span>
 
             <div>
-              <p className="font-body text-xs text-[#8C7A6B] mb-1">내 취향 5가지를 모아 찾아낸 추천 메뉴</p>
+              <p className="font-body text-xs text-[#8C7A6B] mb-1">내 취향을 모아 찾아낸 추천 메뉴</p>
               <h2 className="font-title text-3xl text-[#2D241E] tracking-tight">
                 {myResult?.menuName}
               </h2>
@@ -1851,7 +2081,7 @@ export default function FoodBalanceGame() {
                 href={`/restaurant?category=${encodeURIComponent(myResult?.category || '')}`}
                 className="font-title flex-1 py-3.5 bg-[#2D241E] hover:bg-[#43362E] active:scale-[0.98] text-white text-xs rounded-2xl transition text-center shadow-md"
               >
-                근처 {myResult?.category || '맛집'} 찾기 🍽️
+                근처 {myResult?.category || '밥집'} 찾기 🍽️
               </Link>
               <button
                 onClick={startGame}
@@ -1864,11 +2094,11 @@ export default function FoodBalanceGame() {
         )}
       </div>
 
-      {/* 동적 멤버 기반 오늘의 메뉴 현황판 */}
+      {/* 방 멤버 현황판 */}
       <div className="bg-white rounded-[26px] p-5 border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] flex flex-col gap-3">
         <div className="flex justify-between items-center pb-2 border-b border-[#F2EAE0]">
           <span className="font-title text-xs text-[#2D241E]">
-            우리 방의 메뉴 현황 <span className="text-[#A89889]">({roomMembers.length <= 4 ? roomMembers.length : 4}명)</span>
+            우리 방의 오늘 메뉴 현황 <span className="text-[#A89889]">({roomMembers.length <= 4 ? roomMembers.length : 4}명)</span>
           </span>
           <button onClick={() => window.location.reload()} className="font-title text-[10px] text-[#7A6251] bg-[#F7F2EB] border border-[#EADFCF] px-2.5 py-1 rounded-lg hover:bg-[#F3ECE0] transition">
             새로고침 🔄
@@ -1881,13 +2111,21 @@ export default function FoodBalanceGame() {
             const isMe = member === currentUser;
             const isWaiting = member === '초대 대기중';
             
-            const pickRaw = localStorage.getItem(`routy_food_result_${activeRoomCode}_${member}`);
+            const today = getTodayDateString();
+            const pickKey = `routy_food_result_${activeRoomCode}_${member}`;
+            const pickRaw = localStorage.getItem(pickKey);
             let pickName = '';
+
             if (pickRaw) {
               try {
-                pickName = JSON.parse(pickRaw).menuName;
+                const parsed = JSON.parse(pickRaw);
+                if (parsed.date === today) {
+                  pickName = parsed.menuName;
+                } else {
+                  localStorage.removeItem(pickKey);
+                }
               } catch {
-                pickName = pickRaw;
+                pickName = '';
               }
             }
 
@@ -3381,7 +3619,7 @@ export default function HomePage() {
             <h1 className="font-title text-4xl tracking-tight text-[#2D241E] flex items-center gap-1.5 mt-1">
               ROUTY<span className="text-[#C25E3E]">!</span>
             </h1>
-            <p className="font-body text-xs font-normal text-[#8C7A6B] mt-1 leading-relaxed">
+            <p className="font-body text-xs font-normal text-[#8C7A6B] mt-1.5 leading-relaxed">
               취향 고민은 AI가, 만남은 편하게! 직관적인 약속 코스 플래너
             </p>
           </div>
@@ -3416,25 +3654,25 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* 2. 약속 찜 지도 */}
+          {/* 2. 약속 찜 지도 (🤎 딥 베이지 테마) */}
           <Link
             href="/map"
-            className="group relative p-4.5 rounded-[24px] bg-white border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between active:scale-[0.99]"
+            className="group relative p-4.5 rounded-[24px] bg-[#EFE6D8] border-2 border-[#DFCBB5] shadow-[0_4px_16px_rgba(74,59,50,0.06)] hover:border-[#CFB69C] hover:bg-[#E8DDCD] transition-all flex items-center justify-between active:scale-[0.99]"
           >
             <div className="flex items-center gap-3">
-              <span className="w-11 h-11 rounded-2xl bg-[#F7F2EB] border border-[#E8DEC7] flex items-center justify-center text-xl shrink-0">
+              <span className="w-11 h-11 rounded-2xl bg-white border border-[#DFCBB5] flex items-center justify-center text-xl shrink-0 shadow-2xs">
                 🗺️
               </span>
               <div className="text-left">
                 <h3 className="font-title text-base text-[#2D241E] group-hover:text-[#C25E3E] transition-colors">
                   약속 찜 지도
                 </h3>
-                <p className="font-body text-xs text-[#8C7A6B] mt-0.5">
+                <p className="font-body text-xs text-[#6D5441] mt-0.5">
                   가고 싶은 곳을 찜하고 공유해보세요!
                 </p>
               </div>
             </div>
-            <span className="font-title text-xs text-[#8C7A6B] group-hover:text-[#C25E3E] group-hover:translate-x-1 transition-all pl-2">
+            <span className="font-title text-xs text-[#523F30] group-hover:text-[#C25E3E] group-hover:translate-x-1 transition-all pl-2 font-bold">
               GO →
             </span>
           </Link>
@@ -3450,10 +3688,10 @@ export default function HomePage() {
               </span>
               <div className="text-left">
                 <h3 className="font-title text-base text-[#2D241E] group-hover:text-[#C25E3E] transition-colors">
-                  맛집 어디가지?
+                  밥집 어디가지?
                 </h3>
                 <p className="font-body text-xs text-[#8C7A6B] mt-0.5">
-                  거리별, 음식 종류별로 맛집을 찾아드려요!
+                  거리별, 음식 종류별로 밥집을 찾아드려요!
                 </p>
               </div>
             </div>
@@ -3462,7 +3700,7 @@ export default function HomePage() {
             </span>
           </Link>
 
-          {/* 4. 카페 어디가지? (문구 변경 반영) */}
+          {/* 4. 카페 어디가지? */}
           <Link
             href="/cafe"
             className="group relative p-4.5 rounded-[24px] bg-white border-2 border-[#EADFCF] shadow-[0_4px_16px_rgba(74,59,50,0.03)] hover:border-[#D5C2AD] transition-all flex items-center justify-between active:scale-[0.99]"

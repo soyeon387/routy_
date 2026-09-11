@@ -16,6 +16,12 @@ export async function POST(req: Request) {
       model: 'gemini-2.5-flash',
       generationConfig: {
         responseMimeType: 'application/json',
+        temperature: 0.95,
+        maxOutputTokens: 250,
+        // @ts-ignore
+        thinkingConfig: {
+          thinkingBudget: 100, // 약 0.5초 내외로 가볍게 고민 후 즉시 출력
+        },
       },
     });
 
@@ -42,13 +48,15 @@ ${history.map((h: string, idx: number) => `- ${idx === 0 ? '기본 베이스' : 
    - 예시 :
      - 국물 취향을 골랐다면 국물 음식 취향에서 가지치기를 하여 취향 질문을 던져주세요.
      - 맵지 않은 것이 좋다는 취향을 골랐다면 맵지 않은 음식들과 관련된 취향 질문을 던져주세요.
+5. question(질문 문장)은 공백 포함 반드시 20글자 이내로 간결하게 작성하세요.
+6. optionA와 optionB 선택지 문구는 이모지 포함 15자 내외로 균형 있게 작성하세요.
 
 반드시 다음 JSON 형식으로만 응답하세요:
 {
   "isFinal": false,
-  "question": "센스 있는 취향 질문 문장",
-  "optionA": "선택지 A (이모지 포함)",
-  "optionB": "선택지 B (이모지 포함)"
+  "question": "20자 이내의 센스 있는 질문",
+  "optionA": "선택지 A",
+  "optionB": "선택지 B"
 }
 `;
       const result = await model.generateContent(prompt);
@@ -65,7 +73,7 @@ ${history.map((h: string, idx: number) => `- ${idx === 0 ? '기본 베이스' : 
 {
   "isFinal": true,
   "menuName": "구체적인 추천 메뉴명 (예: 들기름 막국수, 매콤 소고기 버섯전골, 크림 트러플 뇨끼)",
-  "category": "한식, 일식, 중식, 양식, 아시안 중 하나"
+  "category": "한식, 분식, 일식, 중식, 양식, 고기 구이, 족발/보쌈, 아시안 중 하나"
 }
 `;
       const result = await model.generateContent(prompt);
