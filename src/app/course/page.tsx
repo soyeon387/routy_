@@ -750,12 +750,14 @@ function SaveCourseToFolderModal({
   const [newFolderName, setNewFolderName] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoadingRooms, setIsLoadingRooms] = useState(true); // 💡 방 목록 로딩 상태 추가
 
   useEffect(() => {
     if (isOpen) {
       setIsSuccess(false);
       setShowAddFolderInput(false);
       setNewFolderName("");
+      setIsLoadingRooms(true); // 💡 모달이 열릴 때 로딩 시작
 
       const user = getCurrentUser() || "";
       const fetchRooms = async () => {
@@ -770,6 +772,8 @@ function SaveCourseToFolderModal({
           setSelectedRoomCode(activeCode);
         } catch (e) {
           console.error(e);
+        } finally {
+          setIsLoadingRooms(false); // 💡 조회 완료 후 로딩 해제
         }
       };
 
@@ -918,7 +922,14 @@ function SaveCourseToFolderModal({
           <p className="font-body text-xs text-[#8C7A6B] mt-0.5 truncate">{steps.length}개 장소 동선 풀세트</p>
         </div>
 
-        {rooms.length === 0 ? (
+        {/* 💡 1. 로딩 중일 때 표시 */}
+        {isLoadingRooms ? (
+          <div className="p-8 bg-white rounded-2xl border border-[#EADFCF] text-center flex flex-col items-center justify-center gap-2.5">
+            <div className="w-6 h-6 border-3 border-[#C25E3E] border-t-transparent rounded-full animate-spin" />
+            <p className="font-body text-xs text-[#8C7A6B]">약속 방 목록을 불러오는 중입니다...</p>
+          </div>
+        ) : rooms.length === 0 ? (
+          /* 💡 2. 조회가 완전히 끝났는데 방이 없을 때만 표시 */
           <div className="p-5 bg-white rounded-2xl border border-dashed border-[#DFCBB5] text-center space-y-2">
             <p className="font-title text-xs text-[#2D241E]">참여 중인 약속 방이 없습니다.</p>
             <p className="font-body text-xs text-[#8C7A6B] leading-relaxed">
@@ -932,6 +943,7 @@ function SaveCourseToFolderModal({
             </Link>
           </div>
         ) : (
+          /* 💡 3. 방이 1개 이상 있을 때 */
           <div className="space-y-3.5">
             <div>
               <label className="font-title text-xs text-[#7A6251] block mb-1">어느 약속 방 보관함에 넣을까요?</label>
@@ -1011,7 +1023,7 @@ function SaveCourseToFolderModal({
           <button
             type="button"
             onClick={handleSaveCourse}
-            disabled={rooms.length === 0 || isSaving}
+            disabled={isLoadingRooms || rooms.length === 0 || isSaving}
             className="font-title flex-1 rounded-xl bg-[#C25E3E] hover:bg-[#B04E30] py-3 text-xs text-white shadow-xs transition disabled:opacity-50 flex items-center justify-center gap-1.5"
           >
             {isSaving ? (
